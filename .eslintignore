@@ -1,0 +1,5 @@
+# src/registerServiceWorker.js
+node_modules/*
+src/public/*
+# build/*
+# config/*

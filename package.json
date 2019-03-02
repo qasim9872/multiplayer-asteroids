@@ -1,0 +1,29 @@
+{
+  "name": "asteroids",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "prettier": "prettier \"**/*.{json,md,scss,yaml,yml}\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src -c .eslintrc.json --ext js,jsx"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "eslint": "5.15.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-prettier": "3.0.1",
+    "prettier": "1.16.4"
+  }
+}
