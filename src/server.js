@@ -8,11 +8,13 @@ const http = require('http');
 const morgan = require('morgan');
 const socketIO = require('socket.io');
 const path = require('path');
+const Game = require('./controller/game');
 
 // INITIALISATION
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
+const game = new Game();
 
 // MIDDLEWARES
 app.use(
@@ -21,7 +23,7 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 // SERVE STATIC
 app.use(express.static(path.join(__dirname, 'public')));
@@ -29,6 +31,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ROUTES
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/client/index.html'));
+});
+
+// SOCKET EVENT HANDLER
+io.on('connection', socket => {
+  console.log(`connection event received`);
+  socket.on(`new-player`, data => {
+    console.log(`new-player event received`);
+    game.playerConnected(data);
+  });
+
+  socket.on(`player-action`, data => {
+    console.log(`player-action event received`);
+  });
+
+  socket.on(`disconnect`, data => {
+    console.log(`disconnect event received`);
+    game.playerDisconnected(data);
+  });
 });
 
 // INIT SERVER
