@@ -41,7 +41,7 @@ class Drawing {
 
     drawCircle() {
         this.context.beginPath();
-        this.context.arc(95, 50, 40, 0, 2 * Math.PI);
+        this.context.arc(0, 0, 40, 0, 2 * Math.PI);
         this.context.stroke();
     }
 
@@ -74,6 +74,8 @@ class Drawing {
             scale = object.scale,
             path = object.path;
 
+        this.context.lineWidth = 1.0 / scale;
+
         this.context.setTransform(Math.cos(direction) * scale, Math.sin(direction) * scale,
             -Math.sin(direction) * scale, Math.cos(direction) * scale,
             position[0], position[1]);
@@ -96,7 +98,18 @@ class Drawing {
         this.context.stroke();
         this.context.closePath();
 
+        // Check special conditions
+        this.handleSpecialCases(object);
+
         // Reset tranformation matrix
         this.context.setTransform(1, 0, 0, 1, 0, 0);
+    }
+
+    handleSpecialCases(object) {
+        if (Input.COLLISION_BOX) {
+            this.context.beginPath();
+            this.context.arc(0, 0, object.radius, 0, 2 * Math.PI);
+            this.context.stroke();
+        }
     }
 }

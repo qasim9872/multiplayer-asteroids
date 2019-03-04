@@ -20,6 +20,8 @@ Input.UP = false;
 Input.RIGHT = false;
 /** @type {boolean} */
 Input.SPACE = false;
+/** @type {boolean} */
+Input.COLLISION_BOX = false;
 /** @type {Object<number, boolean>} */
 Input.MISC_KEYS = {};
 
@@ -44,6 +46,9 @@ Input.onKeyDown = function (event) {
             break;
         case 32:
             Input.SPACE = true;
+            break;
+        case 71:
+            Input.COLLISION_BOX = true;
             break;
         default:
             Input.MISC_KEYS[event.keyCode] = true;
@@ -73,6 +78,9 @@ Input.onKeyUp = function (event) {
             break;
         case 32:
             Input.SPACE = false;
+            break;
+        case 71:
+            Input.COLLISION_BOX = false;
             break;
         default:
             Input.MISC_KEYS[event.keyCode] = false;

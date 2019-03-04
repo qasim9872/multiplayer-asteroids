@@ -1,28 +1,28 @@
-class Player {
-  constructor(socket, config) {
-    this.playerSocket = socket;
-    this.config = config;
+const GameObject = require('./game-object');
+class Player extends GameObject {
+  static getPath() {
+    return [[10, 0], [-5, 5], [-5, -5], [10, 0]];
+  }
 
-    this.score = 0;
-    this.lives = config.PLAYER_LIVES;
+  constructor(socket, config) {
+    super(config, 'player', Player.getPath());
+
+    this.playerSocket = socket;
+
     this.setup();
 
     this.init();
   }
 
   setup() {
+    // Overwrite position to place the player in center of screen
     this.position = [this.config.GAME_WIDTH / 2, this.config.GAME_HEIGHT / 2];
-    this.velocity = [0, 0];
 
-    this.direction = -Math.PI / 2;
-
-    this.dead = false;
     this.invincible = false;
     this.lives = this.config.PLAYER_LIVES;
     this.score = 0;
-    this.radius = 3;
-    this.path = [[10, 0], [-5, 5], [-5, -5], [10, 0]];
-    this.scale = 1;
+    this.scale = 2;
+    this.radius = 4;
   }
 
   init() {
@@ -39,7 +39,7 @@ class Player {
       invincible: this.invincible,
       lives: this.lives,
       score: this.score,
-      radius: this.radius,
+      radius: this.getBoundRadius(),
       path: this.path,
       scale: this.scale
     };
@@ -53,43 +53,24 @@ class Player {
     this.playerSocket.emit('game-config', this.config);
   }
 
-  getPosition() {
-    return this.position;
-  }
-  getVelocity() {
-    return this.velocity;
-  }
-  getSpeed() {
-    return Math.sqrt(
-      Math.pow(this.velocity[0], 2) + Math.pow(this.velocity[1], 2)
-    );
-  }
-  getDirection() {
-    return this.direction;
-  }
-  getRadius() {
-    return this.radius;
-  }
   getScore() {
     return this.score;
   }
   addScore(pts) {
     this.score += pts;
   }
+
   lowerScore(pts) {
     this.score -= pts;
     if (score < 0) {
       this.score = 0;
     }
   }
+
   getLives() {
     return this.lives;
   }
-  rotate(rad) {
-    if (!this.dead) {
-      this.direction += rad;
-    }
-  }
+
   thrust(force) {
     if (!this.dead) {
       this.velocity[0] += force * Math.cos(this.direction);
@@ -101,26 +82,12 @@ class Player {
       }
     }
   }
-  move() {
-    this.position[0] += this.velocity[0];
-    if (this.position[0] < 0)
-      this.position[0] = this.config.GAME_WIDTH + this.position[0];
-    else if (this.position[0] > this.config.GAME_WIDTH)
-      this.position[0] -= this.config.GAME_WIDTH;
 
-    this.position[1] += this.velocity[1];
-    if (this.position[1] < 0)
-      this.position[1] = this.config.GAME_HEIGHT + this.position[1];
-    else if (this.position[1] > this.config.GAME_HEIGHT)
-      this.position[1] -= this.config.GAME_HEIGHT;
+  stop() {
+    this.velocity[0] = 0;
+    this.velocity[1] = 0;
   }
-  draw(ctx) {
-    // CLIENT SIDE FUNCTION
-    // Asteroids.drawPath(ctx, position, direction, 1, path);
-  }
-  isDead() {
-    return this.dead;
-  }
+
   isInvincible() {
     return this.invincible;
   }

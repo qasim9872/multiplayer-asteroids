@@ -1,50 +1,57 @@
 const gameObject = require('./game-object');
 
 class Asteroid extends gameObject {
-  static create(canvasWidth, canvasHeight) {
-    const roid = new Asteroid();
-    roid.x = Math.random() * canvasWidth;
-    roid.y = Math.random() * canvasHeight;
-    // while (!roid.isClear()) {
-    //   roid.x = Math.random() * canvasWidth;
-    //   roid.y = Math.random() * canvasHeight;
-    // }
-    roid.vel.x = Math.random() * 4 - 2;
-    roid.vel.y = Math.random() * 4 - 2;
-    if (Math.random() > 0.5) {
-      roid.points.reverse();
-    }
-    roid.vel.rot = Math.random() * 2 - 1;
-    console.log(roid);
-    return roid;
+  static getPath() {
+    return [
+      [-10, 0],
+      [-5, 7],
+      [-3, 4],
+      [1, 10],
+      [5, 4],
+      [10, 0],
+      [5, -6],
+      [2, -10],
+      [-4, -10],
+      [-4, -5],
+      [-10, 0]
+    ];
   }
 
-  constructor() {
-    super('asteroid', [
-      -10,
-      0,
-      -5,
-      7,
-      -3,
-      4,
-      1,
-      10,
-      5,
-      4,
-      10,
-      0,
-      5,
-      -6,
-      2,
-      -10,
-      -4,
-      -10,
-      -4,
-      -5
-    ]);
+  constructor(config, _gen = 3) {
+    super(config, 'asteroid', Asteroid.getPath());
 
-    this.scale = 6;
-    this.visible = true;
+    this.scale = 5;
+    this.radius = 10;
+    this.generation = _gen;
+
+    this.init();
+  }
+
+  init() {
+    this.position[0] = Math.random() * this.config.GAME_WIDTH;
+    this.position[1] = Math.random() * this.config.GAME_HEIGHT;
+
+    this.velocity[0] = Math.random() * this.config.ASTEROID_SPEED;
+    this.velocity[1] = Math.random() * this.config.ASTEROID_SPEED;
+
+    this.rotation = (Math.random() + 0.2) * this.config.ASTEROID_ROTATE_SPEED;
+
+    if (Math.random() > 0.5) {
+      this.path.reverse();
+    }
+
+    if (Math.random() > 0.5) {
+      this.rotation = -this.rotation;
+    }
+  }
+
+  move() {
+    super.move();
+    this.rotate(this.rotation);
+  }
+
+  getGeneration() {
+    return generation;
   }
 }
 

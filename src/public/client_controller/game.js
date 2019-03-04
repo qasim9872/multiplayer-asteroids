@@ -56,6 +56,11 @@ class Game {
         this.self = state.self;
         this.players = state.players;
         this.asteroids = state.asteroids;
+
+        // console.log([`player position: ${this.self.position}`, `asteroid position: ${this.asteroids.length > 0 ? this.asteroids[0].position : null}`]);
+
+        // Update info panel
+        this.info.setLives(this.self.lives);
     }
 
     run() {
@@ -89,6 +94,10 @@ class Game {
 
         for (let player of this.players) {
             this.drawing.draw(player, 'red');
+        }
+
+        for (let roid of this.asteroids) {
+            this.drawing.draw(roid);
         }
     }
 

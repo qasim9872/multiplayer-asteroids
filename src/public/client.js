@@ -11,7 +11,7 @@ $(document).ready(function () {
     // Emit event to tell the server that a new player has joined
     socket.emit('new-player', {});
 
-    var game = null;
+    game = null;
 
     socket.on('game-config', (config) => {
 

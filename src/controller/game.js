@@ -25,11 +25,12 @@ class Game {
       MAX_BULLET_AGE: 25,
 
       // Asteroid settings
-      ASTEROID_COUNT: 2, // This + current level = number of asteroids.
+      ASTEROID_COUNT: 1, // This + current level = number of asteroids.
       ASTEROID_GENERATIONS: 3, // How many times to they split before dying?
       ASTEROID_CHILDREN: 2, // How many does each death create?
       ASTEROID_SPEED: 3,
-      ASTEROID_SCORE: 10 // How many points is each one worth?
+      ASTEROID_SCORE: 10, // How many points is each one worth?
+      ASTEROID_ROTATE_SPEED: Math.PI / 25 // How fast do players turn?  (radians)
     };
   }
 
@@ -45,8 +46,13 @@ class Game {
   }
 
   init() {
-    for (let i = 0; i < this.asteroidsCount; i++) {
-      this.asteroids.push(Asteroid.create(this.canvasWidth, this.canvasHeight));
+    this.spawnAsteroids();
+  }
+
+  spawnAsteroids() {
+    for (let i = 0; i < this.config.ASTEROID_COUNT; i++) {
+      const roid = new Asteroid(this.config);
+      this.asteroids.push(roid);
     }
   }
 
@@ -63,6 +69,27 @@ class Game {
         player.move();
       }
     });
+
+    this.asteroids.forEach(roid => {
+      // roid.move();
+    });
+
+    // Check for collision
+    this.checkCollisions();
+  }
+
+  checkCollisions() {
+    // Player collides with asteroids
+    Object.values(this.players).forEach(player => {
+      this.asteroids.forEach(roid => {
+        if (player.checkCollision(roid)) {
+          console.log(`player died`);
+          player.die();
+        }
+      });
+    });
+
+    // Player collides with players
   }
 
   sendState() {
@@ -87,18 +114,24 @@ class Game {
     if (!player) return;
 
     if (playerInput.keyboardState.UP) {
-      console.log(`will apply thrust`);
+      // console.log(`will apply thrust`);
       player.thrust(this.config.THRUST_ACCEL);
     }
 
     if (playerInput.keyboardState.LEFT) {
-      console.log(`will rotate left`);
+      // console.log(`will rotate left`);
       player.rotate(-this.config.ROTATE_SPEED);
     }
 
     if (playerInput.keyboardState.RIGHT) {
-      console.log(`will rotate right`);
+      // console.log(`will rotate right`);
       player.rotate(this.config.ROTATE_SPEED);
+    }
+
+    if (playerInput.keyboardState.SPACE) {
+      // console.log(`will rotate right`);
+      player.stop();
+      player.transformPoints();
     }
   }
 
