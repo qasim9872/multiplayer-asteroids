@@ -1,5 +1,6 @@
 // CONFIG
 const PORT = process.env.PORT || 4000;
+const FRAME_RATE = 1000.0 / 60.0;
 
 // DEPENDENCIES
 const bodyParser = require('body-parser');
@@ -38,7 +39,7 @@ io.on('connection', socket => {
   console.log(`connection event received`);
   socket.on(`new-player`, data => {
     console.log(`new-player event received`);
-    game.playerConnected(data);
+    game.playerConnected(socket, data);
   });
 
   socket.on(`player-action`, data => {
@@ -47,9 +48,16 @@ io.on('connection', socket => {
 
   socket.on(`disconnect`, data => {
     console.log(`disconnect event received`);
-    game.playerDisconnected(data);
+    game.playerDisconnected(socket, data);
   });
 });
+
+// Server side game loop, runs at 60Hz and sends out update packets to all
+// clients every tick.
+setInterval(function() {
+  game.update();
+  game.sendState();
+}, FRAME_RATE);
 
 // INIT SERVER
 server.listen(PORT, () => {

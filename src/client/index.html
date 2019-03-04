@@ -6,7 +6,16 @@
   <script src="vector_battle_regular.typeface.js"></script>
   <script src="client.js"></script>
   <script src="client_controller/game.js"></script>
+  <script src="client_controller/input.js"></script>
+  <script src="client_controller/drawing.js"></script>
   <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: "Calibri", "System", monospace;
+      font-size: 14px;
+    }
+
     #game-container {
       margin-right: auto;
       margin-left: auto;
@@ -18,9 +27,9 @@
     }
 
     #canvas {
-      border: 1px solid black;
       top: 0px;
       left: 0px;
+      border: 1px solid #fff;
     }
 
     .button {
