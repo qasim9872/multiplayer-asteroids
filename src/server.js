@@ -54,6 +54,7 @@ io.on('connection', socket => {
 
 // Server side game loop, runs at 60Hz and sends out update packets to all
 // clients every tick.
+
 setInterval(function() {
   game.update();
   game.sendState();

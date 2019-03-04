@@ -87,9 +87,9 @@ class Game {
 
         this.drawing.draw(this.self);
 
-        // for (let asteroid of this.asteroids) {
-        //     this.drawing.draw(asteroid);
-        // }
+        for (let player of this.players) {
+            this.drawing.draw(player, 'red');
+        }
     }
 
     animate() {

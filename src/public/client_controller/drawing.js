@@ -6,8 +6,7 @@ class Drawing {
     constructor(context, canvasWidth, canvasHeight) {
         this.context = context;
 
-        this.context.fillStyle = 'white';
-        this.context.strokeStyle = 'white';
+        this.setDefaultStyle();
 
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
@@ -21,12 +20,19 @@ class Drawing {
         }
     }
 
+    setDefaultStyle() {
+        this.context.fillStyle = 'white';
+        this.context.strokeStyle = 'white';
+    }
+
     clear() {
         this.context.clearRect(0, 0, this.canvasWidth,
             this.canvasHeight);
     }
 
     drawStars() {
+        this.setDefaultStyle();
+
         var ii = this.stars.length;
         for (var i = 0; i < ii; i++) {
             this.context.fillRect(this.stars[i][0], this.stars[i][1], 1, 1);
@@ -58,7 +64,7 @@ class Drawing {
         this.context.closePath();
     }
 
-    draw(object) {
+    draw(object, fillColor) {
         // this.drawShip()
         if (!object) return;
 
@@ -67,8 +73,6 @@ class Drawing {
             direction = object.direction,
             scale = object.scale,
             path = object.path;
-
-        // console.log(path)
 
         this.context.setTransform(Math.cos(direction) * scale, Math.sin(direction) * scale,
             -Math.sin(direction) * scale, Math.cos(direction) * scale,
@@ -82,7 +86,17 @@ class Drawing {
             this.context.lineTo(path[i][0], path[i][1]);
         }
 
+        if (fillColor) {
+            this.context.fillStyle = fillColor;
+            this.context.strokeStyle = fillColor;
+        } else {
+            this.setDefaultStyle();
+        }
+
         this.context.stroke();
         this.context.closePath();
+
+        // Reset tranformation matrix
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
     }
 }

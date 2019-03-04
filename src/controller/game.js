@@ -4,14 +4,14 @@ class Game {
   static config() {
     return {
       // Game settings
-      GAME_HEIGHT: 480,
-      GAME_WIDTH: 640,
+      GAME_HEIGHT: 576,
+      GAME_WIDTH: 720,
       FRAME_PERIOD: 60, // 1 frame / x frames/sec
       LEVEL_TIMEOUT: 2000, // How long to wait after clearing a level.
 
       // Player settings
-      ROTATE_SPEED: Math.PI / 10, // How fast do players turn?  (radians)
-      MAX_SPEED: 15, // Maximum player speed
+      ROTATE_SPEED: Math.PI / 15, // How fast do players turn?  (radians)
+      MAX_SPEED: 10, // Maximum player speed
       THRUST_ACCEL: 1,
       DEATH_TIMEOUT: 2000, // milliseconds
       INVINCIBLE_TIMEOUT: 1000, // How long to stay invincible after resurrecting?
@@ -83,6 +83,8 @@ class Game {
 
   updatePlayer(playerId, playerInput) {
     const player = this.players[playerId];
+
+    if (!player) return;
 
     if (playerInput.keyboardState.UP) {
       console.log(`will apply thrust`);
