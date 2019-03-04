@@ -19,8 +19,6 @@ Input.UP = false;
 /** @type {boolean} */
 Input.RIGHT = false;
 /** @type {boolean} */
-Input.DOWN = false;
-/** @type {boolean} */
 Input.SPACE = false;
 /** @type {Object<number, boolean>} */
 Input.MISC_KEYS = {};
@@ -43,10 +41,6 @@ Input.onKeyDown = function (event) {
         case 39:
         case 68:
             Input.RIGHT = true;
-            break;
-        case 40:
-        case 83:
-            Input.DOWN = true;
             break;
         case 32:
             Input.SPACE = true;
@@ -76,10 +70,6 @@ Input.onKeyUp = function (event) {
         case 39:
         case 68:
             Input.RIGHT = false;
-            break;
-        case 40:
-        case 83:
-            Input.DOWN = false;
             break;
         case 32:
             Input.SPACE = false;

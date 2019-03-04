@@ -1,34 +1,48 @@
 class Game {
-    static create(socket, canvasElement) {
+    static create(socket, container, config) {
+
+        const {
+            GAME_WIDTH,
+            GAME_HEIGHT
+        } = config;
+
+        container.width = GAME_WIDTH;
+
+        // Setup screen elements
+        const info = new Info(container, config);
+        const canvasElement = Game.setupCanvas(container, GAME_WIDTH, GAME_HEIGHT);
+
+        // Setup event listeners
+        Input.applyEventHandlers(canvasElement);
+
         const canvasContext = canvasElement.getContext('2d');
 
-        const canvasWidth = canvasElement.width;
-        const canvasHeight = canvasElement.height;
+        const drawing = Drawing.create(canvasContext, GAME_WIDTH, GAME_HEIGHT);
 
-        const drawing = Drawing.create(canvasContext, canvasWidth, canvasHeight);
-
-        const game = new Game(socket, drawing, canvasWidth, canvasHeight);
+        const game = new Game(socket, drawing, info);
         game.init();
         return game;
     }
 
-    constructor(socket, drawing, canvasWidth, canvasHeight) {
+    static setupCanvas(container, GAME_WIDTH, GAME_HEIGHT) {
+        var canvas = document.createElement('canvas');
+        canvas.id = "canvas";
+        canvas.width = GAME_WIDTH;
+        canvas.height = GAME_HEIGHT;
+        container.appendChild(canvas);
+        return canvas;
+    }
+
+    constructor(socket, drawing, info) {
         this.socket = socket;
         this.drawing = drawing;
+        this.info = info;
+
+        this.self = null;
+        this.players = [];
+        this.asteroids = [];
 
         this.animationFrameId = 0;
-
-        this.canvasWidth = canvasWidth;
-        this.canvasHeight = canvasHeight;
-
-        // LOCAL GAME STATE VARIABLES
-        this.score = 0;
-        this.totalAsteroids = 5;
-        this.lives = 0;
-
-        this.sprites = [];
-        this.asteroids = [];
-        this.ships = [];
     }
 
     init() {
@@ -38,7 +52,9 @@ class Game {
     }
 
     receiveGameState(state) {
-        this.score = state.score;
+        // console.log(state);
+        this.self = state.self;
+        this.players = state.players;
         this.asteroids = state.asteroids;
     }
 
@@ -49,7 +65,18 @@ class Game {
     }
 
     update() {
-        // console.log(`update ${this.animationFrameId}`)
+        // Emits an event for the containing the player's intention to move
+        // or shoot to the server.
+        var packet = {
+            'keyboardState': {
+                'UP': Input.UP,
+                'RIGHT': Input.RIGHT,
+                'LEFT': Input.LEFT,
+                'SPACE': Input.SPACE
+            },
+            'timestamp': (new Date()).getTime()
+        };
+        this.socket.emit('player-action', packet);
     }
 
     draw() {
@@ -58,9 +85,11 @@ class Game {
 
         this.drawing.drawStars();
 
-        for (let asteroid of this.asteroids) {
-            this.drawing.draw(asteroid);
-        }
+        this.drawing.draw(this.self);
+
+        // for (let asteroid of this.asteroids) {
+        //     this.drawing.draw(asteroid);
+        // }
     }
 
     animate() {

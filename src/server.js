@@ -43,12 +43,12 @@ io.on('connection', socket => {
   });
 
   socket.on(`player-action`, data => {
-    console.log(`player-action event received`);
+    game.updatePlayer(socket.id, data);
   });
 
-  socket.on(`disconnect`, data => {
+  socket.on(`disconnect`, () => {
     console.log(`disconnect event received`);
-    game.playerDisconnected(socket, data);
+    game.playerDisconnected(socket.id);
   });
 });
 

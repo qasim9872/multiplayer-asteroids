@@ -8,6 +8,7 @@
   <script src="client_controller/game.js"></script>
   <script src="client_controller/input.js"></script>
   <script src="client_controller/drawing.js"></script>
+  <script src="client_controller/Info.js"></script>
   <style>
     body {
       background-color: #000;
@@ -16,10 +17,15 @@
       font-size: 14px;
     }
 
+    div#game-container>div>span {
+      float: right;
+      padding-left: 20px;
+    }
+
     #game-container {
       margin-right: auto;
       margin-left: auto;
-      width: 800px;
+      width: 640;
     }
 
     #heading {
@@ -80,18 +86,7 @@
 </head>
 
 <body>
-  <div id="game-container">
-    <h1 id="heading">Asteroids</h1>
-    <canvas id="canvas" width="780" height="540"></canvas>
-    <div id="left-controls">
-      <div id="up" class='button'>THRUST</div>
-      <div id="left" class='button'>LEFT</div>
-      <div id="right" class='button'>RIGHT</div>
-    </div>
-    <div id="right-controls">
-      <div id="space" class='button'>FIRE</div>
-    </div>
-  </div>
+  <div id="game-container">Asteroids game goes here!</div>
 </body>
 
 </html>

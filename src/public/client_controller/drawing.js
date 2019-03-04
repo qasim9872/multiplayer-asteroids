@@ -39,26 +39,50 @@ class Drawing {
         this.context.stroke();
     }
 
-    draw(object) {
-        // this.drawCircle()
-        if (!object.visible) return;
+    drawShip() {
+        this.context.beginPath();
 
-        // this.context.lineWidth = 1.0 / object.scale;
+        const shipPath = [-5, 4,
+            0, -12,
+            5, 4
+        ]
 
-        for (let child in object.children) {
-            this.draw(object.children[child]);
+        this.context.moveTo(shipPath[0], shipPath[1]);
+        for (var i = 1; i < shipPath.length / 2; i++) {
+            var xi = i * 2;
+            var yi = xi + 1;
+            this.context.lineTo(shipPath[xi], shipPath[yi]);
         }
+
+        this.context.stroke();
+        this.context.closePath();
+    }
+
+    draw(object) {
+        // this.drawShip()
+        if (!object) return;
+
+        const
+            position = object.position,
+            direction = object.direction,
+            scale = object.scale,
+            path = object.path;
+
+        // console.log(path)
+
+        this.context.setTransform(Math.cos(direction) * scale, Math.sin(direction) * scale,
+            -Math.sin(direction) * scale, Math.cos(direction) * scale,
+            position[0], position[1]);
 
         this.context.beginPath();
 
-        this.context.moveTo(object.points[0], object.points[1]);
-        for (var i = 1; i < object.points.length / 2; i++) {
-            var xi = i * 2;
-            var yi = xi + 1;
-            this.context.lineTo(object.points[xi], object.points[yi]);
+        this.context.moveTo(path[0][0], path[0][1]);
+
+        for (let i = 1; i < path.length; i++) {
+            this.context.lineTo(path[i][0], path[i][1]);
         }
 
-        this.context.closePath();
         this.context.stroke();
+        this.context.closePath();
     }
 }
