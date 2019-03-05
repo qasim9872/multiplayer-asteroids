@@ -12,19 +12,13 @@ class Explosion extends GameObject {
     return lines;
   }
 
-  constructor(config, position) {
+  constructor(config, position, duration) {
     super(config, 'explosion', Explosion.getPath());
 
     // Update position on
     this.position = position;
-    this.expires = new Date().getTime() + this.config.EXPLOSION_DURATION;
-
-    this.init();
-  }
-
-  init() {
-    this.scale = 1;
-    this.radius = 1;
+    this.expires =
+      new Date().getTime() + (duration || this.config.EXPLOSION_DURATION);
   }
 
   isExpired() {
@@ -33,7 +27,6 @@ class Explosion extends GameObject {
 
   update(delta) {
     this.scale += delta;
-    this.radius += delta;
   }
 }
 

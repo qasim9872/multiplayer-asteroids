@@ -22,8 +22,9 @@ class Player extends GameObject {
     this.invincible = false;
     this.lives = this.config.PLAYER_LIVES;
     this.score = 0;
-    this.scale = 2;
-    this.radius = 4;
+
+    this.scale = 1;
+    this.radius = 2;
 
     this.lastFire = null;
   }
@@ -96,6 +97,11 @@ class Player extends GameObject {
   isInvincible() {
     return this.invincible;
   }
+
+  setInvincibility(bool) {
+    this.invincible = bool;
+  }
+
   extraLife(game) {
     lives++;
   }
@@ -128,8 +134,9 @@ class Player extends GameObject {
   ressurrect() {
     if (this.dead) {
       this.dead = false;
-      setTimeout(function() {
-        this.invincible = false;
+      const tempFunc = this.setInvincibility.bind(this);
+      setTimeout(() => {
+        tempFunc(false);
       }, this.config.INVINCIBLE_TIMEOUT);
     }
   }
@@ -150,7 +157,6 @@ class Player extends GameObject {
   }
 
   fire() {
-    // Add firing logic
     if (this.canFire()) {
       const _pos = [this.position[0], this.position[1]];
       const _dir = this.direction;
@@ -173,7 +179,6 @@ class Player extends GameObject {
 
     for (const bullet of bullets) {
       if (bullet.checkCollision(obj)) {
-        console.log(`bullet hit ${obj.name}`);
         this.handleHitScore(obj.name);
         bullet.targetHit();
         return true;
@@ -192,6 +197,11 @@ class Player extends GameObject {
         this.children[i].update(delta);
       }
     }
+  }
+
+  checkCollision(obj) {
+    if (this.isInvincible()) return false;
+    return super.checkCollision(obj);
   }
 }
 

@@ -27,9 +27,9 @@ class Game {
       MAX_BULLET_AGE: 25,
 
       // Asteroid settings
-      ASTEROID_COUNT: 1, // This + current level = number of asteroids.
+      ASTEROID_COUNT: 5, // This + current level = number of asteroids.
       ASTEROID_GENERATIONS: 3, // How many times to they split before dying?
-      ASTEROID_CHILDREN: 2, // How many does each death create?
+      ASTEROID_CHILDREN: 3, // How many does each death create?
       ASTEROID_SPEED: 3,
       ASTEROID_SCORE: 10, // How many points is each one worth?
       ASTEROID_ROTATE_SPEED: Math.PI / 20, // How fast do players turn?  (radians)
@@ -105,18 +105,23 @@ class Game {
           console.log(`player died`);
           this.explosions.push(new Explosion(this.config, player.position));
 
-          const killedRoid = this.asteroids.splice(i, 1);
-          this.handleAsteroidKill(killedRoid);
+          const killedRoids = this.asteroids.splice(i, 1);
+          this.handleAsteroidKills(killedRoids);
 
           player.die();
         }
 
         // Player's bullets
         if (player.checkIfBulletHits(roid)) {
-          this.explosions.push(new Explosion(this.config, roid.position));
-
-          const killedRoid = this.asteroids.splice(i, 1);
-          this.handleAsteroidKill(killedRoid);
+          this.explosions.push(
+            new Explosion(
+              this.config,
+              roid.position,
+              this.config.EXPLOSION_DURATION / roid.getReverseGeneration()
+            )
+          );
+          const killedRoids = this.asteroids.splice(i, 1);
+          this.handleAsteroidKills(killedRoids);
         }
       }
     });
@@ -126,8 +131,20 @@ class Game {
     // Player, Asteroid, Bullet
   }
 
-  handleAsteroidKill(roid) {
+  handleAsteroidKills(roids) {
     // spawn smaller asteroids
+    for (let roid of roids) {
+      const newGen = roid.getGeneration() - 1;
+      if (newGen > 0) {
+        // Create children
+        for (let i = 0; i < this.config.ASTEROID_CHILDREN; i++) {
+          const newRoid = new Asteroid(this.config, newGen);
+          // set spawn location to parent's location
+          newRoid.position = [roid.position[0], roid.position[1]];
+          this.asteroids.push(newRoid);
+        }
+      }
+    }
   }
 
   sendState() {

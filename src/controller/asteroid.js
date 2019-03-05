@@ -20,9 +20,26 @@ class Asteroid extends GameObject {
   constructor(config, _gen) {
     super(config, 'asteroid', Asteroid.getPath());
 
-    this.scale = 5;
-    this.radius = 10;
     this.generation = _gen ? _gen : this.config.ASTEROID_GENERATIONS;
+
+    this.reverseGen = this.config.ASTEROID_GENERATIONS - this.generation;
+
+    this.scale = 5 - this.reverseGen * 2;
+    this.radius = 10 - this.reverseGen * 2;
+
+    // switch (this.generation) {
+    //   case 3:
+    //     this.scale = 5;
+    //     this.radius = 10;
+    //     break;
+    //   case 2:
+    //     this.scale = 4;
+    //     this.radius = 9;
+    //     break;
+    //   default:
+    //     this.scale = 3;
+    //     this.radius = 8;
+    // }
 
     this.init();
   }
@@ -51,7 +68,11 @@ class Asteroid extends GameObject {
   }
 
   getGeneration() {
-    return generation;
+    return this.generation;
+  }
+
+  getReverseGeneration() {
+    return this.reverseGen + 1;
   }
 }
 
