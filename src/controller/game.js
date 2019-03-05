@@ -1,5 +1,6 @@
 const Asteroid = require('./asteroid');
 const Player = require('./player');
+const Explosion = require('./explosion');
 class Game {
   static config() {
     return {
@@ -21,6 +22,7 @@ class Game {
 
       // Bullet settings
       BULLET_SPEED: 20,
+      BULLET_COOLDOWN: 200,
       MAX_BULLETS: 3,
       MAX_BULLET_AGE: 25,
 
@@ -30,7 +32,10 @@ class Game {
       ASTEROID_CHILDREN: 2, // How many does each death create?
       ASTEROID_SPEED: 3,
       ASTEROID_SCORE: 10, // How many points is each one worth?
-      ASTEROID_ROTATE_SPEED: Math.PI / 25 // How fast do players turn?  (radians)
+      ASTEROID_ROTATE_SPEED: Math.PI / 20, // How fast do players turn?  (radians)
+
+      // Explosion settings
+      EXPLOSION_DURATION: 1000
     };
   }
 
@@ -41,6 +46,7 @@ class Game {
 
     this.players = {};
     this.asteroids = [];
+    this.explosions = [];
 
     this.init();
   }
@@ -62,34 +68,70 @@ class Game {
     this.players[playerId] = new Player(socket, this.config);
   }
 
-  update() {
+  update(delta) {
     // UPDATE GAME OBJECTS
     Object.values(this.players).forEach(player => {
       if (!player.isDead()) {
-        player.move();
+        player.update(delta);
+        player.move(delta);
       }
     });
 
     this.asteroids.forEach(roid => {
-      // roid.move();
+      roid.move(delta);
     });
+
+    // Do a backwards loop and remove explosions from array if applicable
+    for (var i = this.explosions.length - 1; i >= 0; i--) {
+      if (this.explosions[i].isExpired()) {
+        this.explosions.splice(i, 1);
+      } else {
+        this.explosions[i].update(delta);
+      }
+    }
 
     // Check for collision
     this.checkCollisions();
   }
 
   checkCollisions() {
-    // Player collides with asteroids
+    // Player collides
     Object.values(this.players).forEach(player => {
-      this.asteroids.forEach(roid => {
+      for (var i = this.asteroids.length - 1; i >= 0; i--) {
+        // with asteroids
+        const roid = this.asteroids[i];
+
         if (player.checkCollision(roid)) {
           console.log(`player died`);
+          this.explosions.push(new Explosion(this.config, player.position));
+
+          const killedRoid = this.asteroids.splice(i, 1);
+          this.handleAsteroidKill(killedRoid);
+
           player.die();
         }
-      });
+
+        player.children
+          .filter(child => child.name === 'bullet')
+          .forEach(bullet => {
+            if (bullet.checkCollision(roid)) {
+              console.log(`Bullet hit`);
+              this.explosions.push(new Explosion(this.config, roid.position));
+              bullet.targetHit();
+              const killedRoid = this.asteroids.splice(i, 1);
+              this.handleAsteroidKill(killedRoid);
+            }
+          });
+      }
     });
 
     // Player collides with players
+
+    // Player, Asteroid, Bullet
+  }
+
+  handleAsteroidKill(roid) {
+    // spawn smaller asteroids
   }
 
   sendState() {
@@ -103,7 +145,8 @@ class Game {
       player.sendState({
         self: playerStates.find(state => state.playerId === playerId),
         players: playerStates.filter(state => state.playerId !== playerId),
-        asteroids: this.asteroids
+        asteroids: this.asteroids,
+        explosions: this.explosions
       });
     }
   }
@@ -129,9 +172,8 @@ class Game {
     }
 
     if (playerInput.keyboardState.SPACE) {
-      // console.log(`will rotate right`);
-      player.stop();
-      player.transformPoints();
+      // player.stop();
+      player.fire();
     }
   }
 

@@ -1,4 +1,5 @@
 const GameObject = require('./game-object');
+const Bullet = require('./bullet');
 class Player extends GameObject {
   static getPath() {
     return [[10, 0], [-5, 5], [-5, -5], [10, 0]];
@@ -23,6 +24,8 @@ class Player extends GameObject {
     this.score = 0;
     this.scale = 2;
     this.radius = 4;
+
+    this.lastFire = null;
   }
 
   init() {
@@ -41,7 +44,8 @@ class Player extends GameObject {
       score: this.score,
       radius: this.getBoundRadius(),
       path: this.path,
-      scale: this.scale
+      scale: this.scale,
+      children: this.children
     };
   }
 
@@ -56,6 +60,7 @@ class Player extends GameObject {
   getScore() {
     return this.score;
   }
+
   addScore(pts) {
     this.score += pts;
   }
@@ -101,6 +106,8 @@ class Player extends GameObject {
       this.lives--;
       this.position = [this.config.GAME_WIDTH / 2, this.config.GAME_HEIGHT / 2];
       this.velocity = [0, 0];
+      // remove bullets from player
+      this.children = this.children.filter(child => child.name !== 'bullet');
       this.direction = -Math.PI / 2;
       if (this.lives > 0) {
         setTimeout(
@@ -112,11 +119,12 @@ class Player extends GameObject {
           this.config.DEATH_TIMEOUT
         );
       } else {
-        throw new Error(`HANDLE THIS EVENT`);
+        // throw new Error(`HANDLE THIS EVENT`);
         // game.gameOver();
       }
     }
   }
+
   ressurrect() {
     if (this.dead) {
       this.dead = false;
@@ -125,17 +133,43 @@ class Player extends GameObject {
       }, this.config.INVINCIBLE_TIMEOUT);
     }
   }
-  // fire(game) {
-  //   if (!dead) {
-  //     game.log.debug('You fired!');
-  //     var _pos = [position[0], position[1]],
-  //       _dir = direction;
 
-  //     this.lowerScore(POINTS_PER_SHOT);
+  canFire() {
+    switch (true) {
+      case Boolean(!this.lastFire):
+        return true;
 
-  //     return Asteroids.bullet(game, _pos, _dir);
-  //   }
-  // }
+      case this.dead:
+      case Date.now() - this.lastFire < this.config.BULLET_COOLDOWN:
+      case this.children.filter(child => child.name === 'bullet').length >=
+        this.config.MAX_BULLETS:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  fire() {
+    // Add firing logic
+    if (this.canFire()) {
+      const _pos = [this.position[0], this.position[1]];
+      const _dir = this.direction;
+
+      this.children.push(new Bullet(this.config, _pos, _dir));
+      this.lastFire = Date.now();
+    }
+  }
+
+  update(delta) {
+    // Do a backwards loop and remove bullets from array if applicable
+    for (var i = this.children.length - 1; i >= 0; i--) {
+      if (this.children[i].isDead()) {
+        this.children.splice(i, 1);
+      } else {
+        this.children[i].update(delta);
+      }
+    }
+  }
 }
 
 module.exports = Player;

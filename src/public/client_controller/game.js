@@ -21,6 +21,10 @@ class Game {
 
         const game = new Game(socket, drawing, info);
         game.init();
+
+        // Set focus on the canvas element
+        canvasElement.focus();
+
         return game;
     }
 
@@ -41,6 +45,7 @@ class Game {
         this.self = null;
         this.players = [];
         this.asteroids = [];
+        this.explosions = [];
 
         this.animationFrameId = 0;
     }
@@ -56,6 +61,7 @@ class Game {
         this.self = state.self;
         this.players = state.players;
         this.asteroids = state.asteroids;
+        this.explosions = state.explosions;
 
         // console.log([`player position: ${this.self.position}`, `asteroid position: ${this.asteroids.length > 0 ? this.asteroids[0].position : null}`]);
 
@@ -98,6 +104,10 @@ class Game {
 
         for (let roid of this.asteroids) {
             this.drawing.draw(roid);
+        }
+
+        for (let explosion of this.explosions) {
+            this.drawing.drawExplosion(explosion);
         }
     }
 

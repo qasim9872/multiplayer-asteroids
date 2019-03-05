@@ -64,15 +64,13 @@ class Drawing {
         this.context.closePath();
     }
 
-    draw(object, fillColor) {
-        // this.drawShip()
-        if (!object) return;
+    drawExplosion(object) {
+        this.context.save();
 
-        const
-            position = object.position,
-            direction = object.direction,
-            scale = object.scale,
-            path = object.path;
+        const pathArr = object.path;
+        const direction = object.direction;
+        const scale = object.scale;
+        const position = object.position;
 
         this.context.lineWidth = 1.0 / scale;
 
@@ -80,6 +78,51 @@ class Drawing {
             -Math.sin(direction) * scale, Math.cos(direction) * scale,
             position[0], position[1]);
 
+
+        pathArr.forEach(path => {
+            this.drawFromPath(path);
+        });
+
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+
+        this.context.restore();
+    }
+
+    draw(object, fillColor) {
+        if (!object || object.dead) return;
+
+        object.children.forEach(child => this.draw(child, fillColor));
+
+        const position = object.position;
+        const direction = object.direction;
+        const scale = object.scale;
+        const path = object.path;
+
+        this.context.lineWidth = 1.0 / scale;
+
+        this.context.setTransform(Math.cos(direction) * scale, Math.sin(direction) * scale,
+            -Math.sin(direction) * scale, Math.cos(direction) * scale,
+            position[0], position[1]);
+
+        // Draw from path array
+        this.drawFromPath(path, fillColor);
+
+        // Check special conditions
+        this.handleSpecialCases(object);
+
+        // Reset tranformation matrix
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+    }
+
+    handleSpecialCases(object) {
+        if (Input.COLLISION_BOX) {
+            this.context.beginPath();
+            this.context.arc(0, 0, object.radius, 0, 2 * Math.PI);
+            this.context.stroke();
+        }
+    }
+
+    drawFromPath(path, fillColor) {
         this.context.beginPath();
 
         this.context.moveTo(path[0][0], path[0][1]);
@@ -97,19 +140,5 @@ class Drawing {
 
         this.context.stroke();
         this.context.closePath();
-
-        // Check special conditions
-        this.handleSpecialCases(object);
-
-        // Reset tranformation matrix
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
-    }
-
-    handleSpecialCases(object) {
-        if (Input.COLLISION_BOX) {
-            this.context.beginPath();
-            this.context.arc(0, 0, object.radius, 0, 2 * Math.PI);
-            this.context.stroke();
-        }
     }
 }

@@ -1,6 +1,6 @@
-const gameObject = require('./game-object');
+const GameObject = require('./game-object');
 
-class Asteroid extends gameObject {
+class Asteroid extends GameObject {
   static getPath() {
     return [
       [-10, 0],
@@ -17,12 +17,12 @@ class Asteroid extends gameObject {
     ];
   }
 
-  constructor(config, _gen = 3) {
+  constructor(config, _gen) {
     super(config, 'asteroid', Asteroid.getPath());
 
     this.scale = 5;
     this.radius = 10;
-    this.generation = _gen;
+    this.generation = _gen ? _gen : this.config.ASTEROID_GENERATIONS;
 
     this.init();
   }
@@ -45,9 +45,9 @@ class Asteroid extends gameObject {
     }
   }
 
-  move() {
-    super.move();
-    this.rotate(this.rotation);
+  move(delta) {
+    super.move(delta);
+    this.rotate(this.rotation, delta);
   }
 
   getGeneration() {

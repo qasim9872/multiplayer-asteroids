@@ -11,6 +11,8 @@ class gameObject {
     this.radius = 1;
     this.direction = -Math.PI / 2;
     this.dead = false;
+
+    this.children = [];
   }
 
   getName() {
@@ -49,24 +51,34 @@ class gameObject {
     );
   }
 
-  rotate(rad) {
+  rotate(rad, delta = 1) {
     if (!this.dead) {
-      this.direction += rad;
+      this.direction += rad * delta;
     }
   }
 
-  move() {
-    this.position[0] += this.velocity[0];
+  kill() {
+    this.dead = true;
+  }
+
+  moveChildren(delta) {
+    this.children.forEach(child => child.move(delta));
+  }
+
+  move(delta) {
+    this.position[0] += this.velocity[0] * delta;
     if (this.position[0] < 0)
       this.position[0] = this.config.GAME_WIDTH + this.position[0];
     else if (this.position[0] > this.config.GAME_WIDTH)
       this.position[0] -= this.config.GAME_WIDTH;
 
-    this.position[1] += this.velocity[1];
+    this.position[1] += this.velocity[1] * delta;
     if (this.position[1] < 0)
       this.position[1] = this.config.GAME_HEIGHT + this.position[1];
     else if (this.position[1] > this.config.GAME_HEIGHT)
       this.position[1] -= this.config.GAME_HEIGHT;
+
+    this.moveChildren(delta);
   }
 
   transformPoints() {
@@ -87,6 +99,8 @@ class gameObject {
   }
 
   checkCollision(object) {
+    if (object.isDead() || this.isDead()) return false;
+
     var a_pos = object.getPosition(),
       b_pos = this.getPosition();
 
@@ -100,6 +114,10 @@ class gameObject {
       return true;
     }
     return false;
+  }
+
+  update(delta) {
+    this.children.forEach(child => child.update(delta));
   }
 }
 
