@@ -17,6 +17,15 @@ class Bullet extends GameObject {
     this.velocity[1] = this.config.BULLET_SPEED * Math.sin(direction);
   }
 
+  getState() {
+    const state = super.getState();
+    return {
+      ...state,
+      age: this.age,
+      hit: this.hit
+    };
+  }
+
   targetHit() {
     this.hit = true;
   }

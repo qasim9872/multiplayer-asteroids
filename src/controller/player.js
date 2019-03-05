@@ -24,7 +24,7 @@ class Player extends GameObject {
     this.score = 0;
 
     this.scale = 1;
-    this.radius = 2;
+    this.radius = 4;
 
     this.lastFire = null;
   }
@@ -33,33 +33,24 @@ class Player extends GameObject {
     this.sendConfig();
   }
 
-  getPlayerState() {
+  sendConfig() {
+    this.playerSocket.emit('game-config', this.config);
+  }
+
+  getState() {
+    const state = super.getState();
+
     return {
+      ...state,
       playerId: this.playerSocket.id,
-      position: this.position,
-      velocity: this.velocity,
-      direction: this.direction,
-      dead: this.dead,
       invincible: this.invincible,
       lives: this.lives,
-      score: this.score,
-      radius: this.getBoundRadius(),
-      path: this.path,
-      scale: this.scale,
-      children: this.children
+      score: this.score
     };
   }
 
   sendState(gameState) {
     this.playerSocket.emit('update', gameState);
-  }
-
-  sendConfig() {
-    this.playerSocket.emit('game-config', this.config);
-  }
-
-  getScore() {
-    return this.score;
   }
 
   addScore(pts) {
@@ -71,10 +62,6 @@ class Player extends GameObject {
     if (score < 0) {
       this.score = 0;
     }
-  }
-
-  getLives() {
-    return this.lives;
   }
 
   thrust(force) {
@@ -102,9 +89,10 @@ class Player extends GameObject {
     this.invincible = bool;
   }
 
-  extraLife(game) {
+  extraLife() {
     lives++;
   }
+
   die() {
     if (!this.dead) {
       this.dead = true;

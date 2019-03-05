@@ -149,7 +149,7 @@ class Game {
 
   sendState() {
     const playerStates = Object.values(this.players).map(player =>
-      player.getPlayerState()
+      player.getState()
     );
 
     for (const playerId of Object.keys(this.players)) {
@@ -158,8 +158,8 @@ class Game {
       player.sendState({
         self: playerStates.find(state => state.playerId === playerId),
         players: playerStates.filter(state => state.playerId !== playerId),
-        asteroids: this.asteroids,
-        explosions: this.explosions
+        asteroids: this.asteroids.map(roid => roid.getState()),
+        explosions: this.explosions.map(expl => expl.getState())
       });
     }
   }

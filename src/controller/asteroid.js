@@ -27,20 +27,6 @@ class Asteroid extends GameObject {
     this.scale = 5 - this.reverseGen * 2;
     this.radius = 10 - this.reverseGen * 2;
 
-    // switch (this.generation) {
-    //   case 3:
-    //     this.scale = 5;
-    //     this.radius = 10;
-    //     break;
-    //   case 2:
-    //     this.scale = 4;
-    //     this.radius = 9;
-    //     break;
-    //   default:
-    //     this.scale = 3;
-    //     this.radius = 8;
-    // }
-
     this.init();
   }
 
@@ -60,6 +46,14 @@ class Asteroid extends GameObject {
     if (Math.random() > 0.5) {
       this.rotation = -this.rotation;
     }
+  }
+
+  getState() {
+    const state = super.getState();
+    return {
+      ...state,
+      generation: this.generation
+    };
   }
 
   move(delta) {

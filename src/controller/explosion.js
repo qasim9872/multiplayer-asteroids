@@ -21,6 +21,14 @@ class Explosion extends GameObject {
       new Date().getTime() + (duration || this.config.EXPLOSION_DURATION);
   }
 
+  getState() {
+    const state = super.getState();
+    return {
+      ...state,
+      expires: this.expires
+    };
+  }
+
   isExpired() {
     return new Date().getTime() > this.expires;
   }

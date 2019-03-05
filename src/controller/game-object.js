@@ -1,3 +1,6 @@
+/**
+ * @description This is the base class for all game objects. It contains the main functions that are required by all child classess
+ */
 class gameObject {
   constructor(config, name, path) {
     this.config = config;
@@ -6,41 +9,37 @@ class gameObject {
 
     // x, y position
     this.position = [0, 0];
+
     this.velocity = [0, 0];
+
     this.scale = 1;
     this.radius = 1;
+
+    // Initial direction is set to be facing up
     this.direction = -Math.PI / 2;
     this.dead = false;
 
     this.children = [];
   }
 
-  getName() {
-    return this.name;
-  }
-  getPath() {
-    return this.path;
-  }
-  getPosition() {
-    return this.position;
-  }
-  getVelocity() {
-    return this.velocity;
-  }
-  getScale() {
-    return this.scale;
-  }
-  getRadius() {
-    return this.radius;
+  getState() {
+    return {
+      name: this.name,
+      path: this.path,
+      position: this.position,
+      velocity: this.velocity,
+      scale: this.scale,
+      radius: this.getBoundRadius(),
+      direction: this.direction,
+      dead: this.dead,
+      children: this.children.map(child => child.getState())
+    };
   }
 
   getBoundRadius() {
     return this.radius * this.scale;
   }
 
-  getDirection() {
-    return this.direction;
-  }
   isDead() {
     return this.dead;
   }
@@ -94,15 +93,14 @@ class gameObject {
       const transformedY = y + curY;
       return [transformedX, transformedY];
     });
-    // console.log(transformedPath);
     return transformedPath;
   }
 
   checkCollision(object) {
     if (object.isDead() || this.isDead()) return false;
 
-    var a_pos = object.getPosition(),
-      b_pos = this.getPosition();
+    var a_pos = object.position,
+      b_pos = this.position;
 
     function sq(x) {
       return Math.pow(x, 2);
