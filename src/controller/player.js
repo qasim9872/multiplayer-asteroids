@@ -160,6 +160,29 @@ class Player extends GameObject {
     }
   }
 
+  handleHitScore(name) {
+    switch (name) {
+      case 'asteroid':
+        this.addScore(this.config.ASTEROID_SCORE);
+        break;
+    }
+  }
+
+  checkIfBulletHits(obj) {
+    const bullets = this.children.filter(child => child.name === 'bullet');
+
+    for (const bullet of bullets) {
+      if (bullet.checkCollision(obj)) {
+        console.log(`bullet hit ${obj.name}`);
+        this.handleHitScore(obj.name);
+        bullet.targetHit();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   update(delta) {
     // Do a backwards loop and remove bullets from array if applicable
     for (var i = this.children.length - 1; i >= 0; i--) {

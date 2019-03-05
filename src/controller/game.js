@@ -95,12 +95,12 @@ class Game {
   }
 
   checkCollisions() {
-    // Player collides
+    // collides with asteroids
     Object.values(this.players).forEach(player => {
       for (var i = this.asteroids.length - 1; i >= 0; i--) {
-        // with asteroids
         const roid = this.asteroids[i];
 
+        // Player
         if (player.checkCollision(roid)) {
           console.log(`player died`);
           this.explosions.push(new Explosion(this.config, player.position));
@@ -111,17 +111,13 @@ class Game {
           player.die();
         }
 
-        player.children
-          .filter(child => child.name === 'bullet')
-          .forEach(bullet => {
-            if (bullet.checkCollision(roid)) {
-              console.log(`Bullet hit`);
-              this.explosions.push(new Explosion(this.config, roid.position));
-              bullet.targetHit();
-              const killedRoid = this.asteroids.splice(i, 1);
-              this.handleAsteroidKill(killedRoid);
-            }
-          });
+        // Player's bullets
+        if (player.checkIfBulletHits(roid)) {
+          this.explosions.push(new Explosion(this.config, roid.position));
+
+          const killedRoid = this.asteroids.splice(i, 1);
+          this.handleAsteroidKill(killedRoid);
+        }
       }
     });
 

@@ -67,6 +67,7 @@ class Game {
 
         // Update info panel
         this.info.setLives(this.self.lives);
+        this.info.setScore(this.self.score);
     }
 
     run() {
