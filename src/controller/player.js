@@ -88,7 +88,7 @@ class Player extends GameObject {
     }
   }
 
-  stop() {
+  brake() {
     this.velocity[0] = 0;
     this.velocity[1] = 0;
   }

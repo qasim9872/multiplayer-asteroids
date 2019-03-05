@@ -84,7 +84,8 @@ class Game {
                 'UP': Input.UP,
                 'RIGHT': Input.RIGHT,
                 'LEFT': Input.LEFT,
-                'SPACE': Input.SPACE
+                'SPACE': Input.SPACE,
+                'BRAKE': Input.BRAKE
             },
             'timestamp': (new Date()).getTime()
         };

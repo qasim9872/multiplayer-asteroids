@@ -168,8 +168,11 @@ class Game {
     }
 
     if (playerInput.keyboardState.SPACE) {
-      // player.stop();
       player.fire();
+    }
+
+    if (playerInput.keyboardState.BRAKE) {
+      player.brake();
     }
   }
 
