@@ -48,6 +48,7 @@ class Game {
         this.explosions = [];
 
         this.animationFrameId = 0;
+        this.endingGame = false;
     }
 
     init() {
@@ -57,8 +58,8 @@ class Game {
     }
 
     receiveGameState(state) {
-        // console.log(state);
         this.self = state.self;
+
         this.players = state.players;
         this.asteroids = state.asteroids;
         this.explosions = state.explosions;
@@ -110,6 +111,13 @@ class Game {
 
         for (let explosion of this.explosions) {
             this.drawing.drawExplosion(explosion);
+        }
+
+        // overlay text based on game state 
+        if (this.self && this.self.gamePlayState === 'starting') {
+            this.drawing.startingText();
+        } else if (this.self && this.self.gamePlayState === 'finished') {
+            this.drawing.restartText();
         }
     }
 

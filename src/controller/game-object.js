@@ -7,6 +7,10 @@ class gameObject {
     this.name = name;
     this.path = path;
 
+    this.setInitialState();
+  }
+
+  setInitialState() {
     // x, y position
     this.position = [0, 0];
 
@@ -29,7 +33,7 @@ class gameObject {
       position: this.position,
       velocity: this.velocity,
       scale: this.scale,
-      radius: this.getBoundRadius(),
+      radius: this.radius, // this.getBoundRadius(),
       direction: this.direction,
       dead: this.dead,
       children: this.children.map(child => child.getState())

@@ -27,7 +27,7 @@ class Game {
       MAX_BULLET_AGE: 25,
 
       // Asteroid settings
-      ASTEROID_COUNT: 5, // This + current level = number of asteroids.
+      ASTEROID_COUNT: 1, // This + current level = number of asteroids.
       ASTEROID_GENERATIONS: 3, // How many times to they split before dying?
       ASTEROID_CHILDREN: 3, // How many does each death create?
       ASTEROID_SPEED: 3,
@@ -76,6 +76,10 @@ class Game {
         player.move(delta);
       }
     });
+
+    if (this.asteroids.length === 0) {
+      this.spawnAsteroids();
+    }
 
     this.asteroids.forEach(roid => {
       roid.move(delta);
@@ -169,28 +173,7 @@ class Game {
 
     if (!player) return;
 
-    if (playerInput.keyboardState.UP) {
-      // console.log(`will apply thrust`);
-      player.thrust(this.config.THRUST_ACCEL);
-    }
-
-    if (playerInput.keyboardState.LEFT) {
-      // console.log(`will rotate left`);
-      player.rotate(-this.config.ROTATE_SPEED);
-    }
-
-    if (playerInput.keyboardState.RIGHT) {
-      // console.log(`will rotate right`);
-      player.rotate(this.config.ROTATE_SPEED);
-    }
-
-    if (playerInput.keyboardState.SPACE) {
-      player.fire();
-    }
-
-    if (playerInput.keyboardState.BRAKE) {
-      player.brake();
-    }
+    player.handleInput(playerInput);
   }
 
   playerDisconnected(playerId) {

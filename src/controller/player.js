@@ -31,6 +31,22 @@ class Player extends GameObject {
 
   init() {
     this.sendConfig();
+    this.setGamePlayState();
+  }
+
+  setGamePlayState(state) {
+    switch (state) {
+      case 'finished':
+        this.gamePlayState = 'finished';
+        break;
+      case 'playing':
+        this.gamePlayState = 'playing';
+        break;
+      case 'starting':
+      default:
+        this.gamePlayState = 'starting';
+        break;
+    }
   }
 
   sendConfig() {
@@ -45,7 +61,8 @@ class Player extends GameObject {
       playerId: this.playerSocket.id,
       invincible: this.invincible,
       lives: this.lives,
-      score: this.score
+      score: this.score,
+      gamePlayState: this.gamePlayState
     };
   }
 
@@ -103,6 +120,7 @@ class Player extends GameObject {
       // remove bullets from player
       this.children = this.children.filter(child => child.name !== 'bullet');
       this.direction = -Math.PI / 2;
+
       if (this.lives > 0) {
         setTimeout(
           (function(player) {
@@ -114,7 +132,8 @@ class Player extends GameObject {
         );
       } else {
         // throw new Error(`HANDLE THIS EVENT`);
-        // game.gameOver();
+        // game over event
+        this.setGamePlayState('finished');
       }
     }
   }
@@ -187,8 +206,76 @@ class Player extends GameObject {
     }
   }
 
+  delayedSetGamePlayState(playState) {
+    setTimeout(
+      (() => {
+        this.setGamePlayState(playState);
+      }).bind(this),
+      1000
+    );
+  }
+
+  handleInput(playerInput) {
+    // HANDLE THE BELOW EVENT DIFFERENTLY BASED ON GAME STATE
+
+    if (this.gamePlayState !== 'playing') {
+      if (
+        this.gamePlayState === 'starting' &&
+        playerInput.keyboardState.SPACE
+      ) {
+        console.log('event received and starting');
+        this.delayedSetGamePlayState('playing');
+      }
+
+      if (
+        this.gamePlayState === 'finished' &&
+        playerInput.keyboardState.SPACE
+      ) {
+        this.restartGame();
+        this.delayedSetGamePlayState('playing');
+      }
+      // DO not handle events unless space is first pressed
+      return;
+    }
+
+    if (playerInput.keyboardState.UP) {
+      // console.log(`will apply thrust`);
+      this.thrust(this.config.THRUST_ACCEL);
+    }
+
+    if (playerInput.keyboardState.LEFT) {
+      // console.log(`will rotate left`);
+      this.rotate(-this.config.ROTATE_SPEED);
+    }
+
+    if (playerInput.keyboardState.RIGHT) {
+      // console.log(`will rotate right`);
+      this.rotate(this.config.ROTATE_SPEED);
+    }
+
+    if (playerInput.keyboardState.BRAKE) {
+      this.brake();
+    }
+
+    if (playerInput.keyboardState.SPACE) {
+      this.fire();
+    }
+  }
+
+  resetStats() {
+    this.lives = this.config.PLAYER_LIVES;
+    this.score = 0;
+
+    this.lastFire = null;
+  }
+
+  restartGame() {
+    this.resetStats();
+    this.ressurrect();
+  }
+
   checkCollision(obj) {
-    if (this.isInvincible()) return false;
+    if (this.isInvincible() || this.gamePlayState !== 'playing') return false;
     return super.checkCollision(obj);
   }
 }

@@ -141,4 +141,26 @@ class Drawing {
         this.context.stroke();
         this.context.closePath();
     }
+
+    writeTextInCenter(text) {
+        this.context.save();
+
+        // Place text in middle
+        const x = this.canvasWidth / 2;
+        const y = this.canvasHeight / 2;
+
+        this.context.font = "25px Arial";
+        this.context.textAlign = "center";
+        this.context.fillText(text, x, y);
+
+        this.context.restore();
+    }
+
+    startingText() {
+        this.writeTextInCenter("Press space to begin");
+    }
+
+    restartText() {
+        this.writeTextInCenter("GAME OVER - Press space to restart");
+    }
 }
