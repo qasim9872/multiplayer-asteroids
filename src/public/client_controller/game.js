@@ -48,7 +48,7 @@ class Game {
         this.explosions = [];
 
         this.animationFrameId = 0;
-        this.endingGame = false;
+        this.lastKeyboardState = null;
     }
 
     init() {
@@ -80,17 +80,35 @@ class Game {
     update() {
         // Emits an event for the containing the player's intention to move
         // or shoot to the server.
-        var packet = {
-            'keyboardState': {
-                'UP': Input.UP,
-                'RIGHT': Input.RIGHT,
-                'LEFT': Input.LEFT,
-                'SPACE': Input.SPACE,
-                'BRAKE': Input.BRAKE
-            },
-            'timestamp': (new Date()).getTime()
+
+        const currentKeyboardState = {
+            'UP': Input.UP,
+            'RIGHT': Input.RIGHT,
+            'LEFT': Input.LEFT,
+            'SPACE': Input.SPACE,
+            'BRAKE': Input.BRAKE
         };
-        this.socket.emit('player-action', packet);
+
+        const differenceBetweenKeyboardState = difference(this.lastKeyboardState, currentKeyboardState);
+
+        if (differenceBetweenKeyboardState) {
+            let packet = {
+                keyboardState: differenceBetweenKeyboardState,
+                // We will always send the timestamp
+                'timestamp': (new Date()).getTime()
+            };
+
+            console.log(differenceBetweenKeyboardState);
+
+            this.lastKeyboardState = currentKeyboardState;
+
+            // Uncomment below - the last intent sent by the client will still be executed
+            // this.count = this.count ? this.count + 1 : 1;
+            // if (this.count > 4) return;
+            this.socket.emit('player-action', packet);
+        }
+
+        // TO-DO: Execute the actions locally
     }
 
     draw() {
@@ -99,6 +117,7 @@ class Game {
 
         this.drawing.drawStars();
 
+        // Draw game entities
         this.drawing.draw(this.self);
 
         for (let player of this.players) {

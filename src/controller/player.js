@@ -27,6 +27,7 @@ class Player extends GameObject {
     this.radius = 4;
 
     this.lastFire = null;
+    this.playerInput = null;
   }
 
   init() {
@@ -131,7 +132,6 @@ class Player extends GameObject {
           this.config.DEATH_TIMEOUT
         );
       } else {
-        // throw new Error(`HANDLE THIS EVENT`);
         // game over event
         this.setGamePlayState('finished');
       }
@@ -196,6 +196,11 @@ class Player extends GameObject {
   }
 
   update(delta) {
+    // execute player input if available
+    if (this.playerInput) {
+      this.handleInput();
+    }
+
     // Do a backwards loop and remove bullets from array if applicable
     for (var i = this.children.length - 1; i >= 0; i--) {
       if (this.children[i].isDead()) {
@@ -215,9 +220,21 @@ class Player extends GameObject {
     );
   }
 
-  handleInput(playerInput) {
-    // HANDLE THE BELOW EVENT DIFFERENTLY BASED ON GAME STATE
+  setInput(playerInput) {
+    if (!this.playerInput) this.playerInput = playerInput;
+    else
+      Object.assign(this.playerInput.keyboardState, playerInput.keyboardState);
 
+    if (this.isDead()) {
+      // handle input since the update function won't be called
+      this.handleInput();
+    }
+  }
+
+  handleInput() {
+    const playerInput = this.playerInput;
+
+    // HANDLE THE BELOW EVENT DIFFERENTLY BASED ON GAME STATE
     if (this.gamePlayState !== 'playing') {
       if (
         this.gamePlayState === 'starting' &&
@@ -231,6 +248,7 @@ class Player extends GameObject {
         this.gamePlayState === 'finished' &&
         playerInput.keyboardState.SPACE
       ) {
+        console.log(`restarting game`);
         this.restartGame();
         this.delayedSetGamePlayState('playing');
       }

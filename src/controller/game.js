@@ -173,7 +173,7 @@ class Game {
 
     if (!player) return;
 
-    player.handleInput(playerInput);
+    player.setInput(playerInput);
   }
 
   playerDisconnected(playerId) {
