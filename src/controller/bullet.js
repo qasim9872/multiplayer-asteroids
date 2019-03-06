@@ -31,11 +31,13 @@ class Bullet extends GameObject {
   }
 
   update(delta) {
+    // update state of object
     if (this.age < this.config.MAX_BULLET_AGE && !this.hit) {
       this.age += delta;
     } else {
       this.kill();
     }
+    super.update(delta);
   }
 }
 

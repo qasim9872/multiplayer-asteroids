@@ -201,12 +201,12 @@ class Player extends GameObject {
       this.handleInput();
     }
 
+    super.update(delta);
+
     // Do a backwards loop and remove bullets from array if applicable
     for (var i = this.children.length - 1; i >= 0; i--) {
       if (this.children[i].isDead()) {
         this.children.splice(i, 1);
-      } else {
-        this.children[i].update(delta);
       }
     }
   }
@@ -240,7 +240,6 @@ class Player extends GameObject {
         this.gamePlayState === 'starting' &&
         playerInput.keyboardState.SPACE
       ) {
-        console.log('event received and starting');
         this.delayedSetGamePlayState('playing');
       }
 
@@ -248,7 +247,6 @@ class Player extends GameObject {
         this.gamePlayState === 'finished' &&
         playerInput.keyboardState.SPACE
       ) {
-        console.log(`restarting game`);
         this.restartGame();
         this.delayedSetGamePlayState('playing');
       }

@@ -24,6 +24,21 @@ class gameObject {
     this.dead = false;
 
     this.children = [];
+
+    this.lastUpdateTime = 0;
+    this.updateTimeDifference = 0;
+  }
+
+  getUpdateDelta() {
+    var currentTime = new Date().getTime();
+    if (this.lastUpdateTime == 0) {
+      this.updateTimeDifference = 0;
+    } else {
+      this.updateTimeDifference = currentTime - this.lastUpdateTime;
+    }
+
+    this.lastUpdateTime = currentTime;
+    return this.updateTimeDifference / 1000;
   }
 
   getState() {
@@ -54,18 +69,14 @@ class gameObject {
     );
   }
 
-  rotate(rad, delta = 1) {
+  rotate(rad) {
     if (!this.dead) {
-      this.direction += rad * delta;
+      this.direction += rad;
     }
   }
 
   kill() {
     this.dead = true;
-  }
-
-  moveChildren(delta) {
-    this.children.forEach(child => child.move(delta));
   }
 
   move(delta) {
@@ -80,24 +91,6 @@ class gameObject {
       this.position[1] = this.config.GAME_HEIGHT + this.position[1];
     else if (this.position[1] > this.config.GAME_HEIGHT)
       this.position[1] -= this.config.GAME_HEIGHT;
-
-    this.moveChildren(delta);
-  }
-
-  transformPoints() {
-    const transformedPath = this.path.map(cord => {
-      // We set the canvas 0,0 to the x and y below and draw from there
-      const x = this.position[0];
-      const y = this.position[1];
-
-      const curX = cord[0] * this.scale;
-      const curY = cord[1] * this.scale;
-
-      const transformedX = x + curX;
-      const transformedY = y + curY;
-      return [transformedX, transformedY];
-    });
-    return transformedPath;
   }
 
   checkCollision(object) {
@@ -119,6 +112,7 @@ class gameObject {
   }
 
   update(delta) {
+    this.move(delta);
     this.children.forEach(child => child.update(delta));
   }
 }

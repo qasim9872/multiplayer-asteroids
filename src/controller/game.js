@@ -32,7 +32,7 @@ class Game {
       ASTEROID_CHILDREN: 3, // How many does each death create?
       ASTEROID_SPEED: 3,
       ASTEROID_SCORE: 10, // How many points is each one worth?
-      ASTEROID_ROTATE_SPEED: Math.PI / 20, // How fast do players turn?  (radians)
+      ASTEROID_ROTATE_SPEED: Math.PI / 25, // How fast do players turn?  (radians)
 
       // Explosion settings
       EXPLOSION_DURATION: 1000
@@ -73,7 +73,6 @@ class Game {
     Object.values(this.players).forEach(player => {
       if (!player.isDead()) {
         player.update(delta);
-        player.move(delta);
       }
     });
 
@@ -82,7 +81,7 @@ class Game {
     }
 
     this.asteroids.forEach(roid => {
-      roid.move(delta);
+      roid.update(delta);
     });
 
     // Do a backwards loop and remove explosions from array if applicable
