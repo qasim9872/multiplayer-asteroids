@@ -6,6 +6,15 @@ $(document).ready(function () {
 
     const socket = io();
 
+    const emitMethod = socket.emit;
+    // Artificial delay of 100ms
+    socket.emit = function () {
+        var args = Array.from(arguments);
+        setTimeout(() => {
+            emitMethod.apply(this, args);
+        }, 500);
+    }
+
     // Input.applyEventHandlers(canvas);
 
     // Emit event to tell the server that a new player has joined

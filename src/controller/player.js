@@ -211,7 +211,7 @@ class Player extends GameObject {
       (() => {
         this.setGamePlayState(playState);
       }).bind(this),
-      1000
+      100
     );
   }
 
