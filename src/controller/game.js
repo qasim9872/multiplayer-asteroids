@@ -7,7 +7,7 @@ class Game {
       // Game settings
       GAME_HEIGHT: 576,
       GAME_WIDTH: 720,
-      FRAME_PERIOD: 60, // 1 frame / x frames/sec
+      FRAME_PERIOD: 30, // 1 frame / x frames/sec
       LEVEL_TIMEOUT: 2000, // How long to wait after clearing a level.
 
       // Player settings
@@ -35,7 +35,10 @@ class Game {
       ASTEROID_ROTATE_SPEED: Math.PI / 25, // How fast do players turn?  (radians)
 
       // Explosion settings
-      EXPLOSION_DURATION: 1000
+      EXPLOSION_DURATION: 1000,
+
+      // Synchronisation settings
+      BUCKET_SYNCHRONISATION_TIME: 100 // The time after which update will be executed
     };
   }
 
@@ -44,14 +47,17 @@ class Game {
     // Load game config
     this.config = Game.config();
 
+    this.init();
+  }
+
+  /**
+   * This function initializes the variables that will hold the game state
+   */
+  init() {
     this.players = {};
     this.asteroids = [];
     this.explosions = [];
 
-    this.init();
-  }
-
-  init() {
     this.spawnAsteroids();
   }
 

@@ -52,6 +52,7 @@ class Asteroid extends GameObject {
     const state = super.getState();
     return {
       ...state,
+      rotation: this.rotation,
       generation: this.generation
     };
   }

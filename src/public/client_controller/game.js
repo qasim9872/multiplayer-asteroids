@@ -19,7 +19,7 @@ class Game {
 
         const drawing = Drawing.create(canvasContext, GAME_WIDTH, GAME_HEIGHT);
 
-        const game = new Game(socket, drawing, info);
+        const game = new Game(socket, config, drawing, info);
         game.init();
 
         // Set focus on the canvas element
@@ -37,8 +37,9 @@ class Game {
         return canvas;
     }
 
-    constructor(socket, drawing, info) {
+    constructor(socket, config, drawing, info) {
         this.socket = socket;
+        this.config = config;
         this.drawing = drawing;
         this.info = info;
 
@@ -48,6 +49,8 @@ class Game {
         this.explosions = [];
 
         this.animationFrameId = 0;
+        this.lastTick = null;
+
         this.lastKeyboardState = null;
     }
 
@@ -60,24 +63,32 @@ class Game {
     receiveGameState(state) {
         this.self = state.self;
 
+        // The below entities will move based on dead reckoning
+        // TO-DO Will have to merge the state
         this.players = state.players;
         this.asteroids = state.asteroids;
         this.explosions = state.explosions;
-
-        // console.log([`player position: ${this.self.position}`, `asteroid position: ${this.asteroids.length > 0 ? this.asteroids[0].position : null}`]);
 
         // Update info panel
         this.info.setLives(this.self.lives);
         this.info.setScore(this.self.score);
     }
 
-    run() {
-        this.update();
+    run(currentTick) {
+
+        let delta = 0;
+        if (this.lastTick) {
+            delta = currentTick - this.lastTick;
+            delta /= 30;
+        }
+        this.lastTick = currentTick;
+
+        this.update(delta);
         this.draw();
         this.animate();
     }
 
-    update() {
+    update(delta) {
         // Emits an event for the containing the player's intention to move
         // or shoot to the server.
 
@@ -109,6 +120,13 @@ class Game {
         }
 
         // TO-DO: Execute the actions locally
+        this.updateLocalEntities(delta)
+    }
+
+    updateLocalEntities(delta) {
+        // console.log(`rotation before: ${this.asteroids[0].rotation}`);
+        // moveAsteroidLocally(this.asteroids, this.config, delta);
+        // console.log(`rotation after: ${this.asteroids[0].rotation}`);
     }
 
     draw() {

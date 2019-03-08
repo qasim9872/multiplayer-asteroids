@@ -1,6 +1,5 @@
 // CONFIG
 const PORT = process.env.PORT || 4000;
-const FRAME_RATE = 1000.0 / 60.0;
 
 // DEPENDENCIES
 const bodyParser = require('body-parser');
@@ -52,8 +51,8 @@ io.on('connection', socket => {
   });
 });
 
-// Server side game loop, runs at 60Hz and sends out update packets to all
-// clients every tick.
+// Server side game loop, runs at 30Hz and sends out update packets to all
+// clients every 100ms.
 
 let lastFrame = new Date();
 
@@ -61,11 +60,11 @@ setInterval(function() {
   const thisFrame = Date.now();
   const elapsed = thisFrame - lastFrame;
   lastFrame = thisFrame;
-  const delta = elapsed / 30;
+  const delta = elapsed / game.config.FRAME_PERIOD;
 
   game.update(delta);
   game.sendState();
-}, FRAME_RATE);
+}, game.config.BUCKET_SYNCHRONISATION_TIME);
 
 // INIT SERVER
 server.listen(PORT, () => {

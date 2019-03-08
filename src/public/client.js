@@ -12,7 +12,7 @@ $(document).ready(function () {
         var args = Array.from(arguments);
         setTimeout(() => {
             emitMethod.apply(this, args);
-        }, 100);
+        }, 0);
     }
 
     // Input.applyEventHandlers(canvas);

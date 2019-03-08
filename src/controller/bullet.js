@@ -11,7 +11,7 @@ class Bullet extends GameObject {
     this.position = position;
     this.direction = direction;
     this.age = 0;
-    this.hit = false;
+    // this.hit = false;
 
     this.velocity[0] = this.config.BULLET_SPEED * Math.cos(direction);
     this.velocity[1] = this.config.BULLET_SPEED * Math.sin(direction);
@@ -21,23 +21,22 @@ class Bullet extends GameObject {
     const state = super.getState();
     return {
       ...state,
-      age: this.age,
-      hit: this.hit
+      age: this.age
     };
   }
 
   targetHit() {
-    this.hit = true;
+    this.kill();
   }
 
   update(delta) {
     // update state of object
-    if (this.age < this.config.MAX_BULLET_AGE && !this.hit) {
+    if (this.age < this.config.MAX_BULLET_AGE && !this.isDead()) {
       this.age += delta;
+      super.update(delta);
     } else {
       this.kill();
     }
-    super.update(delta);
   }
 }
 

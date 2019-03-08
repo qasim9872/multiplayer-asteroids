@@ -1,3 +1,8 @@
+var add = require('vectors/add')(2);
+var copy = require('vectors/copy')(2);
+var div = require('vectors/div')(2);
+var mult = require('vectors/mult')(2);
+
 /**
  * @description This is the base class for all game objects. It contains the main functions that are required by all child classess
  */
@@ -8,6 +13,8 @@ class gameObject {
     this.path = path;
 
     this.setInitialState();
+    this.lastUpdateTime = 0;
+    this.updateTimeDifference = 0;
   }
 
   setInitialState() {
