@@ -198,30 +198,13 @@ class Player extends GameObject {
     return false;
   }
 
-  update(externalDelta) {
+  update(delta) {
     // execute player input if available
-    // if (this.playerInput) {
-    //   this.handleInput(delta);
-    // }
-
-    if (this.actions.length > 0) {
-      for (let action of this.actions) {
-        let delta = 0;
-
-        // calculate delta
-        if (this.lastAction)
-          delta =
-            (action.timestamp - this.lastAction) / this.config.FRAME_PERIOD;
-
-        this.lastAction = action.timestamp;
-
-        this.handleInput(delta, action);
-      }
-      // reset actions
-      this.actions = [];
+    if (this.playerInput) {
+      this.handleInput(delta);
     }
 
-    super.update(externalDelta);
+    super.update(delta);
 
     // Do a backwards loop and remove bullets from array if applicable
     for (var i = this.children.length - 1; i >= 0; i--) {
@@ -249,10 +232,6 @@ class Player extends GameObject {
       // handle input since the update function won't be called
       this.handleInput();
     }
-
-    this.playerInput.timestamp = playerInput.timestamp;
-    // Add the action to the actions array
-    this.actions.push(this.playerInput);
   }
 
   handleInput(delta, input) {

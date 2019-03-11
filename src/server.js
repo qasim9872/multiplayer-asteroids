@@ -52,21 +52,6 @@ io.on('connection', socket => {
   });
 });
 
-// Server side game loop, runs at 30Hz and sends out update packets to all
-// clients every 100ms.
-
-// let lastFrame = new Date().getTime();
-
-// setInterval(function() {
-//   const thisFrame = new Date().getTime();
-//   const elapsed = thisFrame - lastFrame;
-//   const delta = elapsed / game.config.FRAME_PERIOD;
-//   lastFrame = thisFrame;
-
-//   game.update(delta);
-//   game.sendState();
-// }, game.config.BUCKET_SYNCHRONISATION_TIME);
-
 let previous = hrtimeMs();
 let tick = 0;
 
@@ -74,7 +59,7 @@ const loop = () => {
   setTimeout(loop, game.config.BUCKET_SYNCHRONISATION_TIME);
 
   let now = hrtimeMs();
-  let delta = (now - previous) / game.config.FRAME_PERIOD; // 1000;
+  let delta = (now - previous) / game.config.FRAME_PERIOD;
 
   // console.log(`${tick}. delta: ${delta}`);
 

@@ -60,11 +60,6 @@ class Game {
     this.players = {};
     this.asteroids = [];
     this.explosions = [];
-    this.bucketSnapshots = [];
-    this.bucketActions = [];
-
-    // The startTime will help in calculating delta and managing buckets
-    this.startTime = new Date().getTime();
 
     this.spawnAsteroids();
   }
@@ -90,15 +85,12 @@ class Game {
   }
 
   update(delta) {
-    // console.log(delta)
     // UPDATE GAME OBJECTS
     Object.values(this.players).forEach(player => {
       if (!player.isDead()) {
         player.update(delta);
       }
     });
-
-    // this.handleBucketActions(delta);
 
     if (this.asteroids.length === 0) {
       this.spawnAsteroids();
@@ -120,19 +112,6 @@ class Game {
     // Check for collision
     this.checkCollisions();
   }
-
-  // handleBucketActions(delta) {
-  //   const sortedActions = this.bucketActions.sort((a, b) => {
-  //     // console.log(`${a.timestamp} - ${b.timestamp}`);
-  //     if (a.timestamp === b.timestamp) return 0;
-  //     else if (a.timestamp > b.timestamp) return 1;
-  //     else return -1;
-  //   });
-
-  //   for (const action of sortedActions) {
-
-  //   }
-  // }
 
   checkCollisions() {
     // collides with asteroids
@@ -210,10 +189,6 @@ class Game {
     if (!player) return;
 
     console.log(`Action received for player with id ${playerId}`);
-    // this.bucketActions.push({
-    //   playerId,
-    //   ...playerInput
-    // });
     player.setInput(playerInput);
   }
 
