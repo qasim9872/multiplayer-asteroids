@@ -59,7 +59,7 @@ class Asteroid extends GameObject {
 
   update(delta) {
     super.update(delta);
-    this.rotate(this.rotation);
+    this.rotate(this.rotation, delta);
   }
 
   getGeneration() {

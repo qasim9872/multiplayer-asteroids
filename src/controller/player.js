@@ -28,6 +28,9 @@ class Player extends GameObject {
 
     this.lastFire = null;
     this.playerInput = null;
+
+    this.actions = [];
+    this.lastAction = null;
   }
 
   init() {
@@ -82,10 +85,10 @@ class Player extends GameObject {
     }
   }
 
-  thrust(force) {
+  thrust(force, delta) {
     if (!this.dead) {
-      this.velocity[0] += force * Math.cos(this.direction);
-      this.velocity[1] += force * Math.sin(this.direction);
+      this.velocity[0] += force * Math.cos(this.direction) * delta;
+      this.velocity[1] += force * Math.sin(this.direction) * delta;
 
       if (this.getSpeed() > this.config.MAX_SPEED) {
         this.velocity[0] = this.config.MAX_SPEED * Math.cos(this.direction);
@@ -195,13 +198,30 @@ class Player extends GameObject {
     return false;
   }
 
-  update(delta) {
+  update(externalDelta) {
     // execute player input if available
-    if (this.playerInput) {
-      this.handleInput();
+    // if (this.playerInput) {
+    //   this.handleInput(delta);
+    // }
+
+    if (this.actions.length > 0) {
+      for (let action of this.actions) {
+        let delta = 0;
+
+        // calculate delta
+        if (this.lastAction)
+          delta =
+            (action.timestamp - this.lastAction) / this.config.FRAME_PERIOD;
+
+        this.lastAction = action.timestamp;
+
+        this.handleInput(delta, action);
+      }
+      // reset actions
+      this.actions = [];
     }
 
-    super.update(delta);
+    super.update(externalDelta);
 
     // Do a backwards loop and remove bullets from array if applicable
     for (var i = this.children.length - 1; i >= 0; i--) {
@@ -225,14 +245,18 @@ class Player extends GameObject {
     else
       Object.assign(this.playerInput.keyboardState, playerInput.keyboardState);
 
-    if (this.isDead()) {
+    if (this.isDead() && this.gamePlayState !== 'playing') {
       // handle input since the update function won't be called
       this.handleInput();
     }
+
+    this.playerInput.timestamp = playerInput.timestamp;
+    // Add the action to the actions array
+    this.actions.push(this.playerInput);
   }
 
-  handleInput() {
-    const playerInput = this.playerInput;
+  handleInput(delta, input) {
+    const playerInput = input || this.playerInput;
 
     // HANDLE THE BELOW EVENT DIFFERENTLY BASED ON GAME STATE
     if (this.gamePlayState !== 'playing') {
@@ -256,17 +280,17 @@ class Player extends GameObject {
 
     if (playerInput.keyboardState.UP) {
       // console.log(`will apply thrust`);
-      this.thrust(this.config.THRUST_ACCEL);
+      this.thrust(this.config.THRUST_ACCEL, delta);
     }
 
     if (playerInput.keyboardState.LEFT) {
       // console.log(`will rotate left`);
-      this.rotate(-this.config.ROTATE_SPEED);
+      this.rotate(-this.config.ROTATE_SPEED, delta);
     }
 
     if (playerInput.keyboardState.RIGHT) {
       // console.log(`will rotate right`);
-      this.rotate(this.config.ROTATE_SPEED);
+      this.rotate(this.config.ROTATE_SPEED, delta);
     }
 
     if (playerInput.keyboardState.BRAKE) {

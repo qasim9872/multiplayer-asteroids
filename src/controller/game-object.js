@@ -76,9 +76,10 @@ class gameObject {
     );
   }
 
-  rotate(rad) {
+  rotate(rad, delta) {
+    const rotationValue = delta ? rad * delta : rad;
     if (!this.dead) {
-      this.direction += rad;
+      this.direction += rotationValue;
     }
   }
 

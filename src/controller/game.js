@@ -3,6 +3,8 @@ const Player = require('./player');
 const Explosion = require('./explosion');
 class Game {
   static config() {
+    const BUCKET_COUNT = 10;
+
     return {
       // Game settings
       GAME_HEIGHT: 576,
@@ -38,7 +40,8 @@ class Game {
       EXPLOSION_DURATION: 1000,
 
       // Synchronisation settings
-      BUCKET_SYNCHRONISATION_TIME: 100 // The time after which update will be executed
+      BUCKET_COUNT, // Defines the number of times update will be run within a second
+      BUCKET_SYNCHRONISATION_TIME: 1000 / BUCKET_COUNT // The time after which update will be executed
     };
   }
 
@@ -51,16 +54,24 @@ class Game {
   }
 
   /**
-   * This function initializes the variables that will hold the game state
+   * This function initializes the variables that will hold the game state on the server side
    */
   init() {
     this.players = {};
     this.asteroids = [];
     this.explosions = [];
+    this.bucketSnapshots = [];
+    this.bucketActions = [];
+
+    // The startTime will help in calculating delta and managing buckets
+    this.startTime = new Date().getTime();
 
     this.spawnAsteroids();
   }
 
+  /**
+   * This function initialises and adds new asteroid objects to the game state
+   */
   spawnAsteroids() {
     for (let i = 0; i < this.config.ASTEROID_COUNT; i++) {
       const roid = new Asteroid(this.config);
@@ -68,19 +79,26 @@ class Game {
     }
   }
 
-  playerConnected(socket, data) {
-    console.log(`Player connected`);
+  /**
+   * This function is called when 'new-player' event is received.
+   * This adds the client to the list of players
+   */
+  playerConnected(socket) {
     const playerId = socket.id;
+    console.log(`new player with id: ${playerId} connected at ${new Date()}`);
     this.players[playerId] = new Player(socket, this.config);
   }
 
   update(delta) {
+    // console.log(delta)
     // UPDATE GAME OBJECTS
     Object.values(this.players).forEach(player => {
       if (!player.isDead()) {
         player.update(delta);
       }
     });
+
+    // this.handleBucketActions(delta);
 
     if (this.asteroids.length === 0) {
       this.spawnAsteroids();
@@ -102,6 +120,19 @@ class Game {
     // Check for collision
     this.checkCollisions();
   }
+
+  // handleBucketActions(delta) {
+  //   const sortedActions = this.bucketActions.sort((a, b) => {
+  //     // console.log(`${a.timestamp} - ${b.timestamp}`);
+  //     if (a.timestamp === b.timestamp) return 0;
+  //     else if (a.timestamp > b.timestamp) return 1;
+  //     else return -1;
+  //   });
+
+  //   for (const action of sortedActions) {
+
+  //   }
+  // }
 
   checkCollisions() {
     // collides with asteroids
@@ -178,11 +209,16 @@ class Game {
 
     if (!player) return;
 
+    console.log(`Action received for player with id ${playerId}`);
+    // this.bucketActions.push({
+    //   playerId,
+    //   ...playerInput
+    // });
     player.setInput(playerInput);
   }
 
   playerDisconnected(playerId) {
-    console.log(`Player disconnected`);
+    console.log(`player with id: ${playerId} disconnected at ${new Date()}`);
     delete this.players[playerId];
   }
 }
