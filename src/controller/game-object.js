@@ -1,8 +1,3 @@
-var add = require('vectors/add')(2);
-var copy = require('vectors/copy')(2);
-var div = require('vectors/div')(2);
-var mult = require('vectors/mult')(2);
-
 /**
  * @description This is the base class for all game objects. It contains the main functions that are required by all child classess
  */
@@ -89,12 +84,14 @@ class gameObject {
 
   move(delta) {
     this.position[0] += this.velocity[0] * delta;
+    // Check and handle if the player has left the screen
     if (this.position[0] < 0)
       this.position[0] = this.config.GAME_WIDTH + this.position[0];
     else if (this.position[0] > this.config.GAME_WIDTH)
       this.position[0] -= this.config.GAME_WIDTH;
 
     this.position[1] += this.velocity[1] * delta;
+    // Check and handle if the player has left the screen
     if (this.position[1] < 0)
       this.position[1] = this.config.GAME_HEIGHT + this.position[1];
     else if (this.position[1] > this.config.GAME_HEIGHT)

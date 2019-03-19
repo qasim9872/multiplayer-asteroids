@@ -1,6 +1,7 @@
 class Game {
     static create(socket, container, config) {
 
+
         const {
             GAME_WIDTH,
             GAME_HEIGHT
@@ -14,6 +15,8 @@ class Game {
 
         // Setup event listeners
         Input.applyEventHandlers(canvasElement);
+        // setup handler for network delay
+        // Game.addNetworkDelayListener(socket)
 
         const canvasContext = canvasElement.getContext('2d');
 
@@ -26,6 +29,19 @@ class Game {
         canvasElement.focus();
 
         return game;
+    }
+
+    static addNetworkDelayListener(socket, delay = 25) {
+        const emitMethod = socket.emit;
+        // Wrap the socket emit function using a timeout to introduce artificial delay
+        socket.emit = function () {
+            const timeout = Input.DELAY ? delay : 0
+            console.log(`Emitting event at ${new Date()} with a timeout of ${timeout}`)
+            var args = Array.from(arguments);
+            setTimeout(() => {
+                emitMethod.apply(this, args);
+            }, timeout);
+        }
     }
 
     static setupCanvas(container, GAME_WIDTH, GAME_HEIGHT) {
@@ -52,6 +68,7 @@ class Game {
         this.lastTick = null;
 
         this.lastKeyboardState = null;
+        this.serverUpdateCount = 0;
     }
 
     init() {
@@ -106,17 +123,30 @@ class Game {
             let packet = {
                 keyboardState: differenceBetweenKeyboardState,
                 // We will always send the timestamp
-                'timestamp': (new Date()).getTime()
+                timestamp: (new Date()).getTime(),
+                updateCount: this.serverUpdateCount
             };
 
             console.log(differenceBetweenKeyboardState);
 
             this.lastKeyboardState = currentKeyboardState;
 
-            // Uncomment below - the last intent sent by the client will still be executed
-            // this.count = this.count ? this.count + 1 : 1;
-            // if (this.count > 4) return;
-            this.socket.emit('player-action', packet);
+
+            const timeout = Input.DELAY ? this.config.ARTIFICIAL_NETWORK_DELAY_TIMEOUT : null;
+            const socket = this.socket
+
+            if (timeout) {
+                setTimeout(() => {
+                    console.log(`Emitting event at ${new Date()} with a timeout of ${timeout}`)
+                    socket.emit('player-action', packet);
+                    this.serverUpdateCount++;
+                }, timeout);
+            } else {
+                this.socket.emit('player-action', packet);
+                this.serverUpdateCount++;
+
+            }
+
         }
 
         // TO-DO: Execute the actions locally

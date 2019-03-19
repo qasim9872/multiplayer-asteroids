@@ -6,17 +6,6 @@ $(document).ready(function () {
 
     const socket = io();
 
-    const emitMethod = socket.emit;
-    // Wrap the socket emit function using a timeout to introduce artificial delay
-    socket.emit = function () {
-        var args = Array.from(arguments);
-        setTimeout(() => {
-            emitMethod.apply(this, args);
-        }, 0);
-    }
-
-    // Input.applyEventHandlers(canvas);
-
     // Emit event to tell the server that a new player has joined
     socket.emit('new-player', {});
 

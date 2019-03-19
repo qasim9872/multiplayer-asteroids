@@ -16,7 +16,7 @@ class Explosion extends GameObject {
     super(config, 'explosion', Explosion.getPath());
 
     // Update position on
-    this.position = position;
+    this.position = [position[0], position[1]];
     this.expires =
       new Date().getTime() + (duration || this.config.EXPLOSION_DURATION);
   }

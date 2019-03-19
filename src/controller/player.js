@@ -14,10 +14,15 @@ class Player extends GameObject {
 
     this.init();
   }
+  
+  setRandomPosition() {
+    this.position[0] = Math.random() * this.config.GAME_WIDTH;
+    this.position[1] = Math.random() * this.config.GAME_HEIGHT;
+  }
 
   setup() {
     // Overwrite position to place the player in center of screen
-    this.position = [this.config.GAME_WIDTH / 2, this.config.GAME_HEIGHT / 2];
+    this.setRandomPosition();
 
     this.invincible = false;
     this.lives = this.config.PLAYER_LIVES;
@@ -31,6 +36,8 @@ class Player extends GameObject {
 
     this.actions = [];
     this.lastAction = null;
+    this.updateCount = 0;
+    this.updateReceivedCount = 0;
   }
 
   init() {
@@ -119,7 +126,8 @@ class Player extends GameObject {
       this.dead = true;
       this.invincible = true;
       this.lives--;
-      this.position = [this.config.GAME_WIDTH / 2, this.config.GAME_HEIGHT / 2];
+      // this.position = [this.config.GAME_WIDTH / 2, this.config.GAME_HEIGHT / 2];
+      this.setRandomPosition()
       this.velocity = [0, 0];
       // remove bullets from player
       this.children = this.children.filter(child => child.name !== 'bullet');
@@ -215,6 +223,7 @@ class Player extends GameObject {
   }
 
   delayedSetGamePlayState(playState) {
+    // Delay the game state change so the bullet isn't fired
     setTimeout(
       (() => {
         this.setGamePlayState(playState);
@@ -227,6 +236,11 @@ class Player extends GameObject {
     if (!this.playerInput) this.playerInput = playerInput;
     else
       Object.assign(this.playerInput.keyboardState, playerInput.keyboardState);
+
+    this.playerInput.timestamp = playerInput.timestamp;
+
+    this.updateCount = this.playerInput.updateCount
+    this.updateReceivedCount++;
 
     if (this.isDead() && this.gamePlayState !== 'playing') {
       // handle input since the update function won't be called

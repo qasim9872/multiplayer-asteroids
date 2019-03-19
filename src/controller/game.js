@@ -41,7 +41,11 @@ class Game {
 
       // Synchronisation settings
       BUCKET_COUNT, // Defines the number of times update will be run within a second
-      BUCKET_SYNCHRONISATION_TIME: 1000 / BUCKET_COUNT // The time after which update will be executed
+      BUCKET_SYNCHRONISATION_TIME: 1000 / BUCKET_COUNT, // The time after which update will be executed
+
+      // ARTIFICIAL NETWORK DELAY SETUP
+      ARTIFICIAL_NETWORK_DELAY_TIMEOUT: 50
+
     };
   }
 
@@ -114,9 +118,10 @@ class Game {
   }
 
   checkCollisions() {
-    // collides with asteroids
-    Object.values(this.players).forEach(player => {
-      for (var i = this.asteroids.length - 1; i >= 0; i--) {
+    // Player 
+    Object.values(this.players).forEach((player, index, playerArray) => {
+      // collides with asteroids
+      for (let i = this.asteroids.length - 1; i >= 0; i--) {
         const roid = this.asteroids[i];
 
         // Player
@@ -143,6 +148,36 @@ class Game {
           this.handleAsteroidKills(killedRoids);
         }
       }
+
+      // with other players
+      for (let i = 0; i < playerArray.length; i++) {
+
+        if (i === index) {
+          // current player
+          continue;
+        } else {
+          const otherPlayer = playerArray[i];
+
+          // Player
+          if (player.checkCollision(otherPlayer)) {
+            console.log(`player crashed into another player and died`);
+            this.explosions.push(new Explosion(this.config, player.position));
+
+            otherPlayer.die();
+            player.die();
+          }
+
+          // Player
+          if (player.checkIfBulletHits(otherPlayer)) {
+            console.log(`player is killed by a bullet`);
+            this.explosions.push(new Explosion(this.config, otherPlayer.position));
+
+            otherPlayer.die();
+          }
+
+        }
+      }
+
     });
 
     // Player collides with players
@@ -188,7 +223,7 @@ class Game {
 
     if (!player) return;
 
-    console.log(`Action received for player with id ${playerId}`);
+    console.log(`Action sent at ${new Date(playerInput.timestamp).toISOString()} with ${playerInput.updateCount} received for player with id ${playerId} at ${new Date().toISOString()}`);
     player.setInput(playerInput);
   }
 
