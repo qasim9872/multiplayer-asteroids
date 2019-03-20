@@ -14,7 +14,7 @@ class Player extends GameObject {
 
     this.init();
   }
-  
+
   setRandomPosition() {
     this.position[0] = Math.random() * this.config.GAME_WIDTH;
     this.position[1] = Math.random() * this.config.GAME_HEIGHT;
@@ -127,7 +127,7 @@ class Player extends GameObject {
       this.invincible = true;
       this.lives--;
       // this.position = [this.config.GAME_WIDTH / 2, this.config.GAME_HEIGHT / 2];
-      this.setRandomPosition()
+      this.setRandomPosition();
       this.velocity = [0, 0];
       // remove bullets from player
       this.children = this.children.filter(child => child.name !== 'bullet');
@@ -189,6 +189,9 @@ class Player extends GameObject {
       case 'asteroid':
         this.addScore(this.config.ASTEROID_SCORE);
         break;
+      case 'player':
+        this.addScore(this.config.PLAYER_SCORE);
+        break;
     }
   }
 
@@ -239,7 +242,7 @@ class Player extends GameObject {
 
     this.playerInput.timestamp = playerInput.timestamp;
 
-    this.updateCount = this.playerInput.updateCount
+    this.updateCount = this.playerInput.updateCount;
     this.updateReceivedCount++;
 
     if (this.isDead() && this.gamePlayState !== 'playing') {

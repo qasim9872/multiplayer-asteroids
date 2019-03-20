@@ -17,6 +17,8 @@ $(document).ready(function () {
         if (game) {
             console.log(`Game config already received`);
         } else {
+            console.log(`Game started with the following configuration`);
+            console.log(config)
             game = Game.create(socket, container, config);
 
             // Begin game loop

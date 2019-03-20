@@ -31,20 +31,8 @@ class Game {
         return game;
     }
 
-    static addNetworkDelayListener(socket, delay = 25) {
-        const emitMethod = socket.emit;
-        // Wrap the socket emit function using a timeout to introduce artificial delay
-        socket.emit = function () {
-            const timeout = Input.DELAY ? delay : 0
-            console.log(`Emitting event at ${new Date()} with a timeout of ${timeout}`)
-            var args = Array.from(arguments);
-            setTimeout(() => {
-                emitMethod.apply(this, args);
-            }, timeout);
-        }
-    }
-
     static setupCanvas(container, GAME_WIDTH, GAME_HEIGHT) {
+        // The below adds a canvas element into the container object and sets the attributes
         var canvas = document.createElement('canvas');
         canvas.id = "canvas";
         canvas.width = GAME_WIDTH;
@@ -60,6 +48,8 @@ class Game {
         this.info = info;
 
         this.self = null;
+
+        // The below tracks the local game state
         this.players = [];
         this.asteroids = [];
         this.explosions = [];
@@ -72,6 +62,7 @@ class Game {
     }
 
     init() {
+        // Sets up the listener for receiving game state from server
         this.socket.on('update', ((data) => {
             this.receiveGameState(data);
         }).bind(this));
@@ -80,8 +71,7 @@ class Game {
     receiveGameState(state) {
         this.self = state.self;
 
-        // The below entities will move based on dead reckoning
-        // TO-DO Will have to merge the state
+        // Set the local game state to that of the server
         this.players = state.players;
         this.asteroids = state.asteroids;
         this.explosions = state.explosions;
@@ -117,6 +107,7 @@ class Game {
             'BRAKE': Input.BRAKE
         };
 
+        // we are only sending the difference between current and last keyboard state to conserve bandwidth
         const differenceBetweenKeyboardState = difference(this.lastKeyboardState, currentKeyboardState);
 
         if (differenceBetweenKeyboardState) {
@@ -148,15 +139,6 @@ class Game {
             }
 
         }
-
-        // TO-DO: Execute the actions locally
-        this.updateLocalEntities(delta)
-    }
-
-    updateLocalEntities(delta) {
-        // console.log(`rotation before: ${this.asteroids[0].rotation}`);
-        // moveAsteroidLocally(this.asteroids, this.config, delta);
-        // console.log(`rotation after: ${this.asteroids[0].rotation}`);
     }
 
     draw() {

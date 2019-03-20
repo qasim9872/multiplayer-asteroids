@@ -21,6 +21,7 @@ class Game {
       PLAYER_LIVES: 3,
       POINTS_PER_SHOT: 1, // How many points does a shot cost? (Should be >= 0.)
       POINTS_TO_EXTRA_LIFE: 500, // How many points to get a 1-up?
+      PLAYER_SCORE: 50, // How many points to shoot another player
 
       // Bullet settings
       BULLET_SPEED: 20,
@@ -45,7 +46,6 @@ class Game {
 
       // ARTIFICIAL NETWORK DELAY SETUP
       ARTIFICIAL_NETWORK_DELAY_TIMEOUT: 50
-
     };
   }
 
@@ -118,7 +118,7 @@ class Game {
   }
 
   checkCollisions() {
-    // Player 
+    // Player
     Object.values(this.players).forEach((player, index, playerArray) => {
       // collides with asteroids
       for (let i = this.asteroids.length - 1; i >= 0; i--) {
@@ -151,7 +151,6 @@ class Game {
 
       // with other players
       for (let i = 0; i < playerArray.length; i++) {
-
         if (i === index) {
           // current player
           continue;
@@ -170,14 +169,14 @@ class Game {
           // Player
           if (player.checkIfBulletHits(otherPlayer)) {
             console.log(`player is killed by a bullet`);
-            this.explosions.push(new Explosion(this.config, otherPlayer.position));
+            this.explosions.push(
+              new Explosion(this.config, otherPlayer.position)
+            );
 
             otherPlayer.die();
           }
-
         }
       }
-
     });
 
     // Player collides with players
@@ -223,7 +222,11 @@ class Game {
 
     if (!player) return;
 
-    console.log(`Action sent at ${new Date(playerInput.timestamp).toISOString()} with ${playerInput.updateCount} received for player with id ${playerId} at ${new Date().toISOString()}`);
+    console.log(
+      `Action sent at ${new Date(playerInput.timestamp).toISOString()} with ${
+        playerInput.updateCount
+      } received for player with id ${playerId} at ${new Date().toISOString()}`
+    );
     player.setInput(playerInput);
   }
 
