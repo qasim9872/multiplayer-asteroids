@@ -5,7 +5,6 @@ const PORT = process.env.PORT || 4000;
 const bodyParser = require('body-parser');
 const express = require('express');
 const http = require('http');
-const morgan = require('morgan');
 const socketIO = require('socket.io');
 const path = require('path');
 const Game = require('./controller/game');
@@ -24,7 +23,6 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-// app.use(morgan('dev'));
 
 // SERVE STATIC
 app.use(express.static(path.join(__dirname, 'public')));

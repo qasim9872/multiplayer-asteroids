@@ -25,6 +25,8 @@ Input.BRAKE = false;
 /** @type {boolean} */
 Input.COLLISION_BOX = false;
 /** @type {boolean} */
+Input.INVINCIBLE = false;
+/** @type {boolean} */
 Input.DELAY = false;
 /** @type {Object<number, boolean>} */
 Input.MISC_KEYS = {};
@@ -91,6 +93,9 @@ Input.onKeyUp = function (event) {
             break;
         case 71:
             Input.COLLISION_BOX = false;
+            break;
+        case 73:
+            Input.INVINCIBLE = !Input.INVINCIBLE;
             break;
         case 78:
             // This is a special case

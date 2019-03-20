@@ -121,6 +121,7 @@ class Player extends GameObject {
     lives++;
   }
 
+  // Kills the current player and allows the player to continue playing if still has lives or start a new game
   die() {
     if (!this.dead) {
       this.dead = true;
@@ -159,6 +160,9 @@ class Player extends GameObject {
     }
   }
 
+  /**
+   * Checks if the player can fire a bullet
+   */
   canFire() {
     switch (true) {
       case Boolean(!this.lastFire):
@@ -174,6 +178,9 @@ class Player extends GameObject {
     }
   }
 
+  /**
+   * Fire a bullet
+   */
   fire() {
     if (this.canFire()) {
       const _pos = [this.position[0], this.position[1]];
@@ -195,6 +202,10 @@ class Player extends GameObject {
     }
   }
 
+  /**
+   * Checks if the any of the player's bullets collide with the given object. If it does, updates the client's score based on the object's name
+   * @param {object} obj
+   */
   checkIfBulletHits(obj) {
     const bullets = this.children.filter(child => child.name === 'bullet');
 
@@ -215,6 +226,7 @@ class Player extends GameObject {
       this.handleInput(delta);
     }
 
+    // Player is moved by the super.update function
     super.update(delta);
 
     // Do a backwards loop and remove bullets from array if applicable
@@ -226,7 +238,7 @@ class Player extends GameObject {
   }
 
   delayedSetGamePlayState(playState) {
-    // Delay the game state change so the bullet isn't fired
+    // Delay the game state change so the bullet isn't fired right away at start of game
     setTimeout(
       (() => {
         this.setGamePlayState(playState);
@@ -235,6 +247,11 @@ class Player extends GameObject {
     );
   }
 
+  /**
+   * This will set the input on the player object and it can be run by calling the handle input function.
+   * The current keyboard state is created by combining the last state with the current differences allowing the client to only send the differences.
+   * @param {object} playerInput
+   */
   setInput(playerInput) {
     if (!this.playerInput) this.playerInput = playerInput;
     else
@@ -295,6 +312,14 @@ class Player extends GameObject {
 
     if (playerInput.keyboardState.SPACE) {
       this.fire();
+    }
+
+    if (
+      playerInput.keyboardState.INVINCIBLE === false ||
+      playerInput.keyboardState.INVINCIBLE
+    ) {
+      // This is added for debugging
+      this.setInvincibility(playerInput.keyboardState.INVINCIBLE);
     }
   }
 

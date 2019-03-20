@@ -81,21 +81,13 @@ class Game {
         this.info.setScore(this.self.score);
     }
 
-    run(currentTick) {
-
-        let delta = 0;
-        if (this.lastTick) {
-            delta = currentTick - this.lastTick;
-            delta /= 30;
-        }
-        this.lastTick = currentTick;
-
-        this.update(delta);
+    run() {
+        this.update();
         this.draw();
         this.animate();
     }
 
-    update(delta) {
+    update() {
         // Emits an event for the containing the player's intention to move
         // or shoot to the server.
 
@@ -104,7 +96,8 @@ class Game {
             'RIGHT': Input.RIGHT,
             'LEFT': Input.LEFT,
             'SPACE': Input.SPACE,
-            'BRAKE': Input.BRAKE
+            'BRAKE': Input.BRAKE,
+            'INVINCIBLE': Input.INVINCIBLE
         };
 
         // we are only sending the difference between current and last keyboard state to conserve bandwidth

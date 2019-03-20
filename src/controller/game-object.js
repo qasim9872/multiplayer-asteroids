@@ -1,5 +1,7 @@
 /**
  * @description This is the base class for all game objects. It contains the main functions that are required by all child classess
+ *
+ * The path defines the set of points which allow the shape to be drawn, this is provided by the sub classes
  */
 class gameObject {
   constructor(config, name, path) {
@@ -8,8 +10,6 @@ class gameObject {
     this.path = path;
 
     this.setInitialState();
-    this.lastUpdateTime = 0;
-    this.updateTimeDifference = 0;
   }
 
   setInitialState() {
@@ -26,24 +26,10 @@ class gameObject {
     this.dead = false;
 
     this.children = [];
-
-    this.lastUpdateTime = 0;
-    this.updateTimeDifference = 0;
-  }
-
-  getUpdateDelta() {
-    var currentTime = new Date().getTime();
-    if (this.lastUpdateTime == 0) {
-      this.updateTimeDifference = 0;
-    } else {
-      this.updateTimeDifference = currentTime - this.lastUpdateTime;
-    }
-
-    this.lastUpdateTime = currentTime;
-    return this.updateTimeDifference / 1000;
   }
 
   getState() {
+    // This is used to only send certain fields to the client and not everything
     return {
       name: this.name,
       path: this.path,
@@ -72,6 +58,7 @@ class gameObject {
   }
 
   rotate(rad, delta) {
+    // Rotate based on delta if available, otherwise use the provided rotation
     const rotationValue = delta ? rad * delta : rad;
     if (!this.dead) {
       this.direction += rotationValue;
@@ -99,6 +86,7 @@ class gameObject {
   }
 
   checkCollision(object) {
+    // A collision cannot happen if one of the objects is dead
     if (object.isDead() || this.isDead()) return false;
 
     var a_pos = object.position,
@@ -108,6 +96,7 @@ class gameObject {
       return Math.pow(x, 2);
     }
 
+    // we get the distance between the positions of the two objects and check if the distance is within the combined radius of the two game objects
     var distance = Math.sqrt(sq(a_pos[0] - b_pos[0]) + sq(a_pos[1] - b_pos[1]));
 
     if (distance <= object.getBoundRadius() + this.getBoundRadius()) {

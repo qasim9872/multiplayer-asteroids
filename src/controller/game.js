@@ -14,7 +14,7 @@ class Game {
 
       // Player settings
       ROTATE_SPEED: Math.PI / 15, // How fast do players turn?  (radians)
-      MAX_SPEED: 10, // Maximum player speed
+      MAX_SPEED: 7, // Maximum player speed
       THRUST_ACCEL: 1,
       DEATH_TIMEOUT: 2000, // milliseconds
       INVINCIBLE_TIMEOUT: 1000, // How long to stay invincible after resurrecting?
@@ -179,13 +179,11 @@ class Game {
       }
     });
 
-    // Player collides with players
-
     // Player, Asteroid, Bullet
   }
 
   handleAsteroidKills(roids) {
-    // spawn smaller asteroids
+    // spawn smaller asteroids if the generation is more than 0
     for (let roid of roids) {
       const newGen = roid.getGeneration() - 1;
       if (newGen > 0) {

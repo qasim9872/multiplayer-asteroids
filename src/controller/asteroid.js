@@ -1,5 +1,9 @@
 const GameObject = require('./game-object');
-
+/**
+ * The asteroids are created and spawned randomly on the screen. Each asteroid has a generation beginning with the default which is the largest.
+ * With each hit, the generation is reduced until it hits 0 in which case its completely destroyed.
+ * The re spawning logic is handled by the game class but the scale is set dynamically based on the generation
+ */
 class Asteroid extends GameObject {
   static getPath() {
     return [
@@ -57,6 +61,10 @@ class Asteroid extends GameObject {
     };
   }
 
+  /**
+   * The update for asteroids also need to spin the asteroid hence the update is overridden
+   * @param {number} delta
+   */
   update(delta) {
     super.update(delta);
     this.rotate(this.rotation, delta);
